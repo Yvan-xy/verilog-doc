@@ -1,4 +1,6 @@
-### Verilog-doc  
+<h3 align=center>Verilog-doc</h3>
+
+---
 
 #### About
 由于verilog的中文社区发展不太好,高质量的文档资料较少,此项目用于翻译整理verilog的各种资料,帮助大家学习.  
@@ -10,6 +12,8 @@
 
 因此我们开发了一个Verilog的在线IDE,希望真正想学的朋友前去体验.  
 我们唯一的目的是传播知识,给想学verilog的朋友以较好的体验,请希望赚学生和国家的钱的老师走开.  
+
+---
 
 #### License  
 GPL 2.0  
