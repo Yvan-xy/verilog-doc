@@ -8,12 +8,12 @@ module top_module(
 
     // State transition logic: Derive an equation for each state flip-flop.
     assign next_state[A] = state[0]&(~in)|state[2]&(~in);
-    assign next_state[B] = state[1]&in|state[1]&in|state[3]&in;
+    assign next_state[B] = state[0]&in|state[1]&in|state[3]&in;
     assign next_state[C] = state[1]&(~in)|state[3]&(~in);
     assign next_state[D] = state[2]&(in);
 
     // Output logic: 
-    assign out = (state == D);
+    assign out = (state[3] == 1);
 
 endmodule
 
