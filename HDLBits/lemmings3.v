@@ -38,22 +38,14 @@ module top_module(
             end
             LEFT_GROUND: begin
                 if(ground) begin
-                    if(dig) begin
-                        next_state <= DIG_LEFT;
-                    end else begin
-                        next_state <= LEFT;
-                    end
+                    next_state <= LEFT;
                 end else begin
                     next_state <= LEFT_GROUND;
                 end
             end
             RIGHT_GROUND: begin
                 if(ground) begin
-                    if(dig) begin
-                        next_state <= DIG_RIGHT;
-                    end else begin
-                        next_state <= RIGHT;
-                    end
+                    next_state <= RIGHT;
                 end else begin
                     next_state <= RIGHT_GROUND;
                 end
