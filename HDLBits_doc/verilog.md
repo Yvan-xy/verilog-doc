@@ -5,7 +5,63 @@
 
 #### - 如何开始  
 
+&emsp;&emsp;欢迎来到二进制的世界,数字逻辑的入门一开始可能有难度,因为你需要学习新的概念,新的硬件描述语言(HDL -- Hardware Description Language)例如 `verilog`,几个新的仿真软件和一块FPGA的板子.但是这能帮你更加深刻的理解计算机的运作原理.  
+
+&emsp;&emsp;设计电路需要如下几个步骤:  
+
+1. 编写HDL(verilog)代码  
+2. 编译代码生成电路  
+3. 模拟电路并修复错误  
+
+&emsp;&emsp;下面,我们来个简单的例子,请把`one`的输出设为1:  
+
+- Module Declaration
+```verilog
+module top_module(output one);
+```
+
+- Solution
+```
+module top_module( output one );
+
+    assign one = 1;
+
+endmodule
+```
+
+
 #### - 输出0
+
+&emsp;&emsp;建立一个没有输入,输出为常数0的电路.
+
+&emsp;&emsp;本系列题使用***verilog-2001 ANSI-style*** 的端口声明语法，因为它更容易阅读并减少了拼写错误。如果愿意，可以使用旧的verilog-1995语法。例如，下面的两个模块声明是可接受的和等效的:  
+
+```verilog
+module top_moduel(zero);
+	output zero;
+	//verilog-1995
+endmodule
+
+module top_module(output zero);
+//verilog-2001
+endmodule
+```
+
+- Module Declaration
+```verilog
+module top_module(
+    output zero
+);
+```
+
+- Solution
+```verilog
+module top_module(
+    output zero
+);// Module body starts after semicolon
+	assign zero=0;
+endmodule
+```
 
 ---
 
@@ -15,19 +71,272 @@
 
 #### - wire类型  
 
+&emsp;&emsp;创建一个具有一个输入和一个输出的模块,其行为想一条"线"(Wire).  
+
+&emsp;&emsp;与物理线不同但十分相似,Verilog中的线(和其他信号)是定向的。这意味着信息只在一个方向上流动,从(通常是一个)源流向汇点(该源通常也被称为驱动程序，将值驱动到wire上).在verilog"连续赋值"(assign left_side=right_side;)中，右侧的信号值被驱动到左侧的"线"上.请注意:赋值是"***连续的***"(Continuous Assignments),因为如果右侧的值发生更改,分配也会一直持续,因此左侧的值将随之改变.(这里与其他语言有很大区别).连续分配不是一次性事件,其产生的变化是永久的.
+
+> 想要真正理解为啥会这样,你首先要明白,你并不是在编写程序,你其实是在用代码"画"电路!
+> 因此输入端的电平高低的变化必然会影响到wire的另一端,你可以想像真的有一根电线连接两个变量.
+
+&emsp;&emsp;模块(module)上的端口(port)也有一个方向(通常是输入 -- input或输出 -- output)。输入端口由来自模块外部的东西驱动，而输出端口驱动外部的东西。从模块内部查看时，输入端口是驱动程序或源，而输出端口是接收器。
+
+&emsp;&emsp;下图说明了电路的每个部分如何对应Verilog代码的每个部分.模块和端口声明创建电路的黑色部分。您的任务是通过添加一个assign语句来创建一条线(绿色).盒子外的部件不是您的问题，但您应该知道,通过将测试激励连接到top_module上的端口来测试电路。
+
+![sp_wire](./picture/sp_wire.png)  
+
+> 除了连续赋值之外，Verilog还有另外三种用于程序块(Procedural block)的赋值类型,其中两种是可综合的.在开始使用Procedural block之前，我们不会使用它们。
+
+- Module Declaraction
+```verilog
+module top_module( input in, output out );
+```
+
+- Solution
+```verilog
+module top_module( input in, output out );
+    assign out = in;
+endmodule
+```
+
 #### - Four wires  
+
+&emsp;&emsp;创建一个具有3个输入和4个输出的模块,这些输入和输出的行为如下:
+```
+A ->W
+B -> X
+B -> Y
+C -> Z
+```
+&emsp;&emsp;下图说明了电路的每个部分如何对应Verilog代码的每个部分.模块外部有三个输入端口和四个输出端口.  
+
+&emsp;&emsp;当您有多个assign语句时,它们在代码中的出现顺序并不重要.与编程语言不同,assign语句("连续赋值")描述事物之间的连接,而不是将值从一个事物复制到另一个事物的操作.  
+
+&emsp;&emsp;可能现在应该澄清的一个潜在的困惑来源是:这里的绿色箭头表示电线之间的连接,但不是wire本身.模块本身已经声明了7条线(名为A、B、C、W、X、Y和Z).这是因为input与output被声明为了wire类型.因此,assign语句不会创建wire,而是描述了在已存在的7条线之间创建的连接.
+
+![wire4](./picture/wire4.png)  
+
+- Module Declaraction  
+```verilog
+module top_module(
+	input a,b,c;
+	output w,x,y,z
+);
+```
+
+- Solution
+```verilog
+module top_module( 
+    input a,b,c,
+    output w,x,y,z );
+    assign w=a;
+    
+assign x=b;
+    
+assign y=b;
+    
+assign z=c;
+endmodule
+```
 
 #### - 反转器 (Inveter)  
 
+&emsp;&emsp;创建实现非门的模块.  
+
+&emsp;&emsp;这个电路和电线相似,但有点不同.当把电线从进线连接到出线时,我们要实现一个反相器(非门)，而不是一根普通的线.  
+
+&emsp;&emsp;使用assign语句.assign语句将连续地将in取反并输出.  
+
+![notgate](./picture/notgate.png)
+
+- Module
+```verilog
+module top_module( input in, output out );
+```
+
+- Solution
+```verilog
+module top_module( input in, output out );
+	assign out = !in;
+endmodule
+```
+
 #### - 与门 (AND gate)  
+
+&emsp;&emsp;创建实现和门的模块.  
+
+&emsp;&emsp;这个电路现在有三条线(A、B和OUT).导线A和B已经具有由输入端口驱动的值.但目前的布线并不是由任何东西驱动的.写一个赋值语句,用信号A和B的和来驱动.  
+
+&emsp;&emsp;输入线由模块外部的东西驱动.assign语句将把一个逻辑级别驱动信号连接到一条线上.正如您可能期望的那样,一条线不能有多个驱动信号(如果有的话,它的逻辑级别是什么?),并且没有驱动信号的导线将具有未定义的值(在合成硬件时通常被视为0,但有时候会出现奇怪的错误).  
+
+![andgate](./picture/andgate.png)  
+
+- Module Declaraction
+```verilog
+module top_module( 
+    input a, 
+    input b, 
+    output out );
+```
+
+- Solution
+```verilog
+module top_module( 
+    input a, 
+    input b, 
+    output out );
+assign out = a&b;
+endmodule
+```
 
 #### - 或非门 (NOR gate)  
 
+&emsp;&emsp;创建实现或非门的模块.或非门是一个输出反转的或门.
+
+&emsp;&emsp;assign语句用一个值来驱动(drive)一条线(或者更正式地称为"net").这个值可以是任意复杂的函数,只要它是一个组合逻辑(即,无内存(memory-less),无隐藏状态).  
+
+![norgate](./picture/norgate.png)  
+
+- Module Declaraction 
+```verilog
+module top_module( 
+    input a, 
+    input b, 
+    output out );
+```
+
+- Solution
+```verilog
+module top_module( 
+    input a, 
+    input b, 
+    output out );
+    assign out = !(a|b);
+endmodule
+```
+
 #### - 异或非门 (XNOR gate)  
+&emsp;&emsp;实现异或非门模块.
+
+![xnor](./picture/xnorgate.png)
+
+- Module Declaraction 
+```verilog
+module top_module( 
+    input a, 
+    input b, 
+    output out );
+```
+
+- Solution
+```verilog
+module top_module( 
+    input a, 
+    input b, 
+    output out );
+    assign out = !(a^b);
+endmodule
+```
+
 
 #### - 声明wires  
 
+&emsp;&emsp;到目前为止,电路都十分简单.随着电路变得越来越复杂,您将需要wire将内部组件连接在一起.当您需要使用导线时,您应该在模块体中在首次使用之前的某个地方声明它.(将来,您将遇到更多类型的信号和变量,它们也以相同的方式声明,但现在,我们将从Wire类型的信号开始).
+
+![wiredec](./picture/wire_dec.png)  
+
+```verilog
+module top_module (
+    input in,              // Declare an input wire named "in"
+    output out             // Declare an output wire named "out"
+);
+
+    wire not_in;           // Declare a wire named "not_in"
+
+    assign out = ~not_in;  // Assign a value to out (create a NOT gate).
+    assign not_in = ~in;   // Assign a value to not_in (create another NOT gate).
+
+endmodule   // End of module "top_module"
+```
+&emsp;&emsp;实现以下电路.创建两个wire(命名任意)以将and/or gate连接在一起.请注意,Not gate 是输出,因此您不必在这里声明第三条线.wire可有多个输出,但只能有一个输入驱动.  
+
+&emsp;&emsp;如果您遵循图中的电路结构,那么应该以四个赋值语句结束,因为有四个信号需要赋值.  
+
+![wire_dec1](./picture/wire_dec1.png)  
+
+
+- Module Declaraction 
+```verilog
+`default_nettype none
+module top_module(
+    input a,
+    input b,
+    input c,
+    input d,
+    output out,
+    output out_n   ); 
+```
+
+- Solution
+```verilog
+`default_nettype none
+module top_module(
+    input a,
+    input b,
+    input c,
+    input d,
+    output out,
+    output out_n   ); 
+wire inside1,inside2;
+    
+assign inside1 = a&b;
+    
+assign inside2 = c&d; 
+    
+assign out = inside1|inside2;
+    
+    assign out_n = !(out);
+endmodule
+```
+
+
 #### - 7458模块
+
+&emsp;&emsp;实现如下电路:  
+
+![7458](./picture/7458.png)  
+
+- Module Declaraction 
+```verilog
+module top_module ( 
+    input p1a, p1b, p1c, p1d, p1e, p1f,
+    output p1y,
+    input p2a, p2b, p2c, p2d,
+    output p2y );
+```
+
+- Solution
+```verilog
+module top_module ( 
+    input p1a, p1b, p1c, p1d, p1e, p1f,
+    output p1y,
+    input p2a, p2b, p2c, p2d,
+    output p2y );
+wire inside1,inside2,inside3,inside4;
+    
+assign inside1 = p1a&p1b&p1c;
+    
+assign inside2 = p1d&p1e&p1f;
+    
+assign inside3 = p2a&p2b;
+    
+assign inside4 = p2c&p2d;
+    
+assign p1y = inside1|inside2;
+    
+assign p2y = inside3|inside4;
+
+endmodule
+```
 
 ---
 
@@ -35,43 +344,295 @@
 
 #### - 容器介绍
 
+&emsp;&emsp;vector被用来对相关的信号进行分组,以便于操作.例如,`Wire[7:0]w`;声明一个名为w 的 8 位数组,在功能上相当于具有8条独立的线.  
+
+&emsp;&emsp;请注意，vector的声明将维度(dimensions 即数组长度)放在容器名称之前,这与C语法相比不常见.  
+
+> 至于为什么会是如下声明,主要是采用了小端序.
+
+```verilog
+Wire[99:0]my_vector；//声明一个长度为100容器
+assign out=my_vector[10]；//从数组中选择一位
+```
+
+&emsp;&emsp;构建一个具有一个3位vector输入的电路,并将其拆分为三个单独的1位输出.  
+
+![vector0](./picture/vector0.png)  
+
+- Module Declaraction 
+```verilog
+module top_module ( 
+    input wire [2:0] vec,
+    output wire [2:0] outv,
+    output wire o2,
+    output wire o1,
+    output wire o0  ); 
+```
+
+- Solution
+```verilog
+module top_module ( 
+    input wire [2:0] vec,
+    output wire [2:0] outv,
+    output wire o2,
+    output wire o1,
+    output wire o0  ); // Module body starts after module declaration
+    assign o0 = vec[0];
+    
+    assign o1 = vec[1];
+    
+    assign o2 = vec[2];
+    
+assign outv = vec;
+endmodule
+```
+
 #### - 容器细节
+
+
+
+- Module Declaraction 
+```verilog
+`default_nettype none     // Disable implicit nets. Reduces some types of bugs.
+module top_module( 
+    input wire [15:0] in,
+    output wire [7:0] out_hi,
+    output wire [7:0] out_lo );
+```
+
+- Solution
+```verilog
+`default_nettype none     // Disable implicit nets. Reduces some types of bugs.
+module top_module( 
+    input wire [15:0] in,
+    output wire [7:0] out_hi,
+    output wire [7:0] out_lo );
+    assign out_lo = in[7:0];
+    
+    assign out_hi = in[15:8];
+endmodule
+```
 
 #### - 容器的片选(Vector part select)  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 位级操作(Bitwise operators)  
+
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 4位Vecotr  
 
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - Vector连接操作符(Vector concatenation operator)  
+
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 反转Vector  
 
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 拷贝操作符(Replication operator)  
 
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 拷贝练习  
+
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 ---
 
 ### 模块与层级(Modules: Hierarchy)  
 
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 模块  
+
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 按位置连接端口(Connecting ports by position)  
 
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 按名称连接端口(Connecting ports by name)  
+
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 三个模块  
 
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 模块与容器  
+
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 加法器1  
 
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 加法器2
+
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 进位选择加法器  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 加-减法器(Adder-subtractor)
+
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 ---
 
@@ -79,37 +640,197 @@
 
 #### - Always块 -- 组合逻辑 (Always blocks -- Combinational)  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - Always块 -- 时序逻辑 (Always blocks -- Clocked)  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - If语句  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - If语句引发的锁存(latches)  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - Case语句  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 简单编码器1  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 简单编码器2  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 避免锁存
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 ---
 
 ### 更多语法特点  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 三目算符 
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 优化运算1  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 优化运算2  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 循环 -- 组合逻辑:实现Vector反转  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 循环 -- 组合逻辑:实现255位计数器  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 循环:实现100位加法器  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 循环:实现100位BCD加法器  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 ---
 
@@ -119,53 +840,292 @@
 
 #### **基础门电路**   
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - Wire类型  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 接地 -- GND
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 或非门 (NOR)  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 其他的门  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 两个门  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 更多的逻辑门  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 7420模块  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 真值表  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 小练习 -- Two-bit equality  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 简单电路A  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 简单电路B  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 组合电路AB  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 铃声与震动模式  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 恒温器  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 3位计数器  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 门与容器  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 更长的数组  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 ---
 
 #### **多路选择器**(Multiplexers)  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 2选1多路选择器  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 #### - 2选1总线选择器  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 9选1多路选择器  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 256选1多路选择器  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 256选1 4位选则器  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 ---
 
@@ -173,19 +1133,99 @@
 
 #### - 3变量  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 4变量 -- 练习一  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 4变量 -- 练习二  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 4变量 -- 练习三  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 最小SOP与POS  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 卡诺图1  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 #### - 卡诺图2  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 #### - 多路选择器实现 K-map  
+
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 ---
 
@@ -210,7 +1250,6 @@ module top_module (
     input [7:0] d,
     output [7:0] q
 );
-
 ```
 
 - **Solution**
