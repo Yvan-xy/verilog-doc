@@ -20,7 +20,9 @@
 
 
 <h4 align=center>License</h4>
-&emsp;&emsp;本项目使用**GPL 2.0**证书
+
+
+&emsp;&emsp;本项目使用 **GPL 2.0** 证书
 
 ---  
 
