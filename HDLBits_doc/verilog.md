@@ -389,6 +389,41 @@ endmodule
 
 #### - 容器细节
 
+&emsp;&emsp;vector声明如下:  
+
+> type [upper:lower] vector_name;
+> `type`指定了vector的类型,通常是`wire`或者`reg`.
+
+```verilog
+wire [2:0] a, c;   // Two vectors
+assign a = 3'b101;  // a = 101
+assign b = a;       // b =   1  implicitly-created wire
+assign c = b;       // c = 001  <-- bug
+my_module i1 (d,e); // d and e are implicitly one-bit wide if not declared.
+                    // This could be a bug if the port was intended to be a vector.
+```
+
+- 关于"片选"(Part Selection) 
+&emsp;&emsp;访问整个数组只需要:  
+```verilog
+assign w = a;
+```
+&emsp;&emsp;而访问数组的一部分,若长度在赋值时不匹配,则用0补齐例如:
+```verilog
+reg [7:0] c;
+assign c = x[3:1];
+//此时,长度不匹配,则用0补齐
+
+w[3:0]      // Only the lower 4 bits of w
+x[1]        // The lowest bit of x
+x[1:1]      // ...also the lowest bit of x
+z[-1:-2]    // Two lowest bits of z
+b[3:0]      // Illegal. Vector part-select must match the direction of the declaration.
+b[0:3]      // The *upper* 4 bits of b.
+assign w[3:0] = b[0:3];    // Assign upper 4 bits of b to lower 4 bits of w. w[3]=b[0], w[2]=b[1], etc.
+```
+
+&emsp;&emsp;建立一个电路,将一个半字(16 bits,[15:0])分成高8位[15:8],与低8位[7:0]输出.
 
 
 - Module Declaraction 
@@ -415,150 +450,369 @@ endmodule
 
 #### - 容器的片选(Vector part select)  
 
+&emsp;&emsp;32位矢量可以被视为包含4个字节（位[31:24]、[23:16]等）。建立一个电路，使4字节字颠倒顺序。
+```
+aaaaaaaabbbbbbcccccccccddddddd=>ddddddddccccccccccbbbbbbbaaaaaaaa
+```
+&emsp;&emsp;此操作通常在需要交换一段数据的结束地址时使用，例如在Little Endian(小端序) x86系统和许多Internet协议中使用的Big Endian(大端序格式之间。
+
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input [31:0] in,
+    output [31:0] out );
 ```
 
 - Solution
 ```verilog
+module top_module( 
+    input [31:0] in,
+    output [31:0] out );//
 
+    // assign out[31:24] = ...;
+    assign out[31:24] = in[7:0];
+    
+    assign out[23:16] = in[15:8];
+    
+    assign out[15:8] = in[23:16];
+    
+    assign out[7:0] = in[31:24];
+endmodule
 ```
 
 #### - 位级操作(Bitwise operators)  
 
+&emsp;&emsp;建立一个电路,该电路有两个3-bits输入,用于计算两个vector的"基于位"的或(bitwise-OR)、两个矢量的"逻辑或"(Logical-OR)和两个矢量的非(NOT).将b的非放在out-not的高位部分(即[5:3]),将a的非放在低位部分。
+
+&emsp;&emsp;看看模拟波形,看看bitwise-OR与Logical-OR的区别.
+
+![vectorgates](./picture/vectorgates.png)
 
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input [2:0] a,
+    input [2:0] b,
+    output [2:0] out_or_bitwise,
+    output out_or_logical,
+    output [5:0] out_not
+);
 ```
 
 - Solution
 ```verilog
+module top_module(
+	input [2:0] a, 
+	input [2:0] b, 
+	output [2:0] out_or_bitwise,
+	output out_or_logical,
+	output [5:0] out_not
+);
+	
+	assign out_or_bitwise = a | b;
+	assign out_or_logical = a || b;
 
+	assign out_not[2:0] = ~a;	// Part-select on left side is o.
+	assign out_not[5:3] = ~b;	//Assigning to [5:3] does not conflict with [2:0]
+	
+endmodule
 ```
 
 #### - 4位Vecotr  
 
+&emsp;&emsp;建立一个具有4为输入的组合电路,输出要求如下:  
+
+- `out_and`: 输入经过 "与门" 后的结果
+- `out_or`: 输入经过 "或门" 后的结果
+- `out_xor`: 输入经过 "异或门" 后的结果
+
 
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input [3:0] in,
+    output out_and,
+    output out_or,
+    output out_xor
+);
 ```
 
 - Solution
 ```verilog
+module top_module( 
+    input [3:0] in,
+    output out_and,
+    output out_or,
+    output out_xor
+);
+    assign out_and = in[0]&in[1]&in[2]&in[3];
+    
+    assign out_or = in[0]|in[1]|in[2]|in[3];
+    
+    assign out_xor = in[0]^in[1]^in[2]^in[3];
+endmodule
 
 ```
 
 #### - Vector连接操作符(Vector concatenation operator)  
 
+&emsp;&emsp;片选用于选择vector的部分.连接运算符{a,b,c}用于通过将vector的较小部分连接在一起来创建较大的vector.
+```verilog
+{3'b111, 3'b000} => 6'b111000
+{1'b1, 1'b0, 3'b101} => 5'b10101
+{4'ha, 4'd10} => 8'b10101010     // 4'ha and 4'd10 are both 4'b1010 in binary
+```
+&emsp;&emsp;连接需要知道每个组件的宽度,因此,{1,2,3}是非法的,并导致错误消息：串联中不允许使用未经大小化的常量。
+连接操作符可以在赋值的左侧和右侧使用。
+```verilog
+input [15:0] in;
+output [23:0] out;
+assign {out[7:0], out[15:8]} = in;         // Swap two bytes. Right side and left side are both 16-bit vectors.
+assign out[15:0] = {in[7:0], in[15:8]};    // This is the same thing.
+assign out = {in[7:0], in[15:8]};       // This is different. The 16-bit vector on the right is extended to
+                                        // match the 24-bit vector on the left, so out[23:16] are zero.
+                                        // In the first two examples, out[23:16] are not assigned.
+
+```
+&emsp;&emsp;连接并重新分割给定输入:
+
+![vector3](./picture/vector3.png)
+
 
 - Module Declaraction 
 ```verilog
-
+module top_module (
+    input [4:0] a, b, c, d, e, f,
+    output [7:0] w, x, y, z );
 ```
 
 - Solution
 ```verilog
+module top_module (
+    input [4:0] a, b, c, d, e, f,
+    output [7:0] w, x, y, z );//
 
+    // assign { ... } = { ... };
+    assign {w[7:0],x[7:0],y[7:0],z[7:0]} = {a[4:0],b[4:0],c[4:0],d[4:0],e[4:0],f[4:0],2'b11};
+endmodule
 ```
 
 #### - 反转Vector  
 
+&emsp;&emsp;反转一个8位vector
 
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input [7:0] in,
+    output [7:0] out
+);
 ```
 
 - Solution
 ```verilog
-
+module top_module( 
+    input [7:0] in,
+    output [7:0] out
+);
+    assign {out[0],out[1],out[2],out[3],out[4],out[5],out[6],out[7]} = in;
+endmodule
 ```
 
 #### - 拷贝操作符(Replication operator)  
 
+&emsp;&emsp;连接运算符允许将vector连接在一起以形成较大的vector.但是有时候你想把同一个东西连接在一起很多次,比如`assign A = {B, B, B, B, B, B};`这样的事情仍然很乏味.复制运算符允许复制vector并将它们连接在一起:
+```verilog
+{num{vector}}
+```
+&emsp;&emsp;这会将`vector`复制`num`次.
+
+例如:
+```verilog
+{5{1'b1}}           // 5'b11111 (or 5'd31 or 5'h1f)
+{2{a,b,c}}          // The same as {a,b,c,a,b,c}
+{3'd5, {2{3'd6}}}   // 9'b101_110_110. It's a concatenation of 101 with
+                    // the second vector, which is two copies of 3'b110.
+```
+
+&emsp;&emsp;复制运算经常会用在"有符号数"的扩转运算中,假如将一个8位有符号数扩展到16位,我们需要将其符号位进行复制并填充到扩展位.即:
+```
+8'b10000001 => 16'b1111111110000001
+//这就是有符号数的扩展
+```
 
 - Module Declaraction 
 ```verilog
-
+module top_module (
+    input [7:0] in,
+    output [31:0] out );
 ```
 
 - Solution
 ```verilog
+module top_module (
+    input [7:0] in,
+    output [31:0] out );//
 
+    // assign out = { replicate-sign-bit , the-input };
+    assign out[31:0] = {{24{in[7]}},in[7:0]};
+endmodule
 ```
 
 #### - 拷贝练习  
 
+&emsp;&emsp;给定5个1位的输入信号,并进行如下图的比较运算,相同的位记为1,并储存在out中.  
+
+```verilog
+out[24] = ~a ^ a;   // a == a, so out[24] is always 1.
+out[23] = ~a ^ b;
+out[22] = ~a ^ c;
+...
+out[ 1] = ~e ^ d;
+out[ 0] = ~e ^ e;
+```
+
+![vector5](./picture/vector5.png)  
 
 - Module Declaraction 
 ```verilog
-
+module top_module (
+    input a, b, c, d, e,
+    output [24:0] out );
 ```
 
 - Solution
 ```verilog
+module top_module (
+    input a, b, c, d, e,
+    output [24:0] out );//
 
+    // The output is XNOR of two vectors created by 
+    // concatenating and replicating the five inputs.
+    // assign out = ~{ ... } ^ { ... };
+    assign out =  ~{{5{a}},{5{b}},{5{c}},{5{d}},{5{e}}} ^ {5{a,b,c,d,e}};
+endmodule
 ```
 
 ---
 
 ### 模块与层级(Modules: Hierarchy)  
 
-
-- Module Declaraction 
-```verilog
-
-```
-
-- Solution
-```verilog
-
-```
-
 #### - 模块  
 
 
+&emsp;&emsp;现在你已经对module很熟悉了,模块实际上就是封装起来的电路.下图显示了一个带有子模块的非常简单的电路.在本练习中,创建模块mod_a的一个实例,然后将模块的三个插脚(in1、in2和out)连接到顶级模块的三个端口(wire a、b和out).模块mod_a是为您提供的,您必须实例化它。
+
+![module](./picture/module.png)  	
+
+> 你有两种实例化模块的方式  
+>
+> 1. 通过位置:
+```verilog
+mod_a ins1 (wa, wb, wc);
+```
+> 2. 通过名称:
+```verilog
+mod_a ins2 ( .out(wc), .in1(wa), .in2(wb) )
+```
+
+
 - Module Declaraction 
 ```verilog
-
+module top_module ( input a, input b, output out );
 ```
 
 - Solution
 ```verilog
-
+module top_module ( input a, input b, output out );
+    mod_a ins(a,b,out);
+endmodule
 ```
 
 #### - 按位置连接端口(Connecting ports by position)  
 
+&emsp;&emsp;此问题与前一个问题（模块）类似。您将得到一个名为mod_a的模块，该模块按顺序具有2个输出和4个输入。您必须按位置将6个端口连接到顶级模块的端口out1、out2、A、B、C和D，顺序如下。
+您将获得以下模块：
+
+`module mod_a ( output, output, input, input, input, input );`
+
+![module_pos](./picture/module_pos.png)
+
 
 - Module Declaraction 
 ```verilog
-
+module top_module ( 
+    input a, 
+    input b, 
+    input c,
+    input d,
+    output out1,
+    output out2
+);
 ```
 
 - Solution
 ```verilog
-
+module top_module ( 
+    input a, 
+    input b, 
+    input c,
+    input d,
+    output out1,
+    output out2
+);
+    mod_a ins(out1,out2,a,b,c,d);
+endmodule
 ```
 
 #### - 按名称连接端口(Connecting ports by name)  
 
+&emsp;&emsp;您将得到一个名为mod_a的模块,该模块具有2个输出和4个输入.必须按名称将6个端口连接到顶级模块的端口:
+
+|Port in mod_a|Port in top_module|
+|:--:|:--:|
+|output out1|out1|
+|output out2|out2|
+|input in1|a|
+|input in2|b|
+|input in3|c|
+|input in4|d|
+
+> mod_a接口如下:
+`module mod_a ( output out1, output out2, input in1, input in2, input in3, input in4);`
+
+![module_name](./picture/module_name.png)  
+
 
 - Module Declaraction 
 ```verilog
-
+module top_module ( 
+    input a, 
+    input b, 
+    input c,
+    input d,
+    output out1,
+    output out2
+);
 ```
 
 - Solution
 ```verilog
-
+module top_module ( 
+    input a, 
+    input b, 
+    input c,
+    input d,
+    output out1,
+    output out2
+);
+    mod_a ins(.out1(out1), .out2(out2), .in1(a), .in2(b), .in3(c), .in4(d));
+endmodule
 ```
 
 #### - 三个模块  
 
+&emsp;&emsp;我们为您提供了一个my_df模块,个输入和一个输出（实现D触发器）。实例化其中的三个，然后将它们链接在一起，形成长度为3的移位寄存器。CLK端口需要连接到所有实例。
 
 - Module Declaraction 
 ```verilog
