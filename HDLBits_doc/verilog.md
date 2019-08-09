@@ -812,42 +812,109 @@ endmodule
 
 #### - 三个模块  
 
-&emsp;&emsp;我们为您提供了一个my_df模块,个输入和一个输出（实现D触发器）。实例化其中的三个，然后将它们链接在一起，形成长度为3的移位寄存器。CLK端口需要连接到所有实例。
+&emsp;&emsp;我们为您提供了一个my_df模块,具有一个输入和一个输出(实现D触发器).实例化其中的三个,然后将它们链接在一起,形成长度为3的移位寄存器.CLK端口需要连接到所有实例.
+
+![module_shift](./picture/module_shift.png)
 
 - Module Declaraction 
 ```verilog
-
+module top_module ( input clk, input d, output q );
 ```
 
 - Solution
 ```verilog
-
+module top_module ( input clk, input d, output q );
+    
+wire out1,out2;
+    my_dff ins1(clk,d,out1);
+    
+    my_dff ins2(clk,out1,out2);
+    
+    my_dff ins3(clk,out2,q);
+endmodule
 ```
 
 #### - 模块与容器  
 
+&emsp;&emsp;我们为您提供了一个模块my-dff8,它有两个输入和一个输出(实现一组8 D-触发器)。实例化其中三个,然后将它们链接在一起,形成长度为3的8位宽移位寄存器.此外,创建一个4对1多路选择器,根据sel[1:0]选择输出内容.
+
+![module_shift8](./picture/module_shift8.png)
+
+
 
 - Module Declaraction 
 ```verilog
-
+module top_module ( 
+    input clk, 
+    input [7:0] d, 
+    input [1:0] sel, 
+    output [7:0] q 
+);
 ```
 
 - Solution
 ```verilog
-
+module top_module ( 
+    input clk, 
+    input [7:0] d, 
+    input [1:0] sel, 
+    output [7:0] q 
+);
+    wire [7:0] out1, out2, out3;
+    my_dff8 ins1(clk,d,out1);
+    my_dff8 ins2(clk,out1,out2);
+    my_dff8 ins3(clk,out2,out3);
+    always @(*) begin
+        case(sel)
+            
+2'b00:begin
+    
+q = d;
+    
+end
+            2'b01:begin
+                q[7:0] = out1[7:0];
+            end
+            2'b10:begin
+                q[7:0] = out2[7:0];
+            end
+            2'b11:begin
+                q[7:0] = out3[7:0];
+            end
+        endcase
+    end
+endmodule
 ```
 
 #### - 加法器1  
 
+&emsp;&emsp;为你提供了add16模块,这是一个16位加法器,请实例化两个该模块并实现如下图32为加法器,请考虑进位.
+
+![module_add](./picture/module_add.png)
+
 
 - Module Declaraction 
 ```verilog
-
+module top_module(
+    input [31:0] a,
+    input [31:0] b,
+    output [31:0] sum
+);
 ```
 
 - Solution
 ```verilog
-
+module top_module(
+    input [31:0] a,
+    input [31:0] b,
+    output [31:0] sum
+);
+    wire [15:0] sum1, sum2;
+    wire cin, cout, cout1;
+    add16 ins1(a[15:0], b[15:0], 0, sum1, cout);
+    add16 ins2(a[31:16], b[31:16], cout, sum2, cout1);
+    assign sum = {sum2,sum1};
+endmodule
 ```
 
 #### - 加法器2
