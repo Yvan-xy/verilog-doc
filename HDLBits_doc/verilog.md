@@ -21,7 +21,7 @@ module top_module(output one);
 ```
 
 - Solution
-```
+```verilog
 module top_module( output one );
 
     assign one = 1;
@@ -919,40 +919,123 @@ endmodule
 
 #### - 加法器2
 
+&emsp;&emsp;请封装一个名为add1的16位加法器模块,并用其实现一个32位加法器.
+
+![modulefadd](./picture/module_fadd.png)
+
 
 - Module Declaraction 
 ```verilog
+module top_module (
+    input [31:0] a,
+    input [31:0] b,
+    output [31:0] sum
+);//
 
+endmodule
+
+module add1 ( input a, input b, input cin,   output sum, output cout );
+
+// Full adder module here
+
+endmodule
 ```
 
 - Solution
 ```verilog
+module top_module (
+    input [31:0] a,
+    input [31:0] b,
+    output [31:0] sum
+);//
+    wire cout,cout1;
+    wire [15:0] sum1, sum2;
+    add16 ins1(a[15:0],b[15:0],0,sum1,cout);
+    add16 ins2(a[31:16],b[31:16],cout,sum2,cout1);
+    assign sum = {sum2[15:0],sum1[15:0]};
 
+endmodule
+
+module add1 ( input a, input b, input cin,   output sum, output cout );
+
+// Full adder module here
+    assign {cout,sum} = a+b+cin;
+endmodule
 ```
 
 #### - 进位选择加法器  
 
+&emsp;&emsp;已为您提供了16位加法器add16模块,请实现如下图电路模块,即考虑第16位相加的进位.  
+
+![module_cseladd](./picture/module_cseladd.png)
+
 - Module Declaraction 
 ```verilog
-
+module top_module(
+    input [31:0] a,
+    input [31:0] b,
+    output [31:0] sum
+);
 ```
 
 - Solution
 ```verilog
-
+module top_module(
+    input [31:0] a,
+    input [31:0] b,
+    output [31:0] sum
+);
+    wire [15:0] sum1,sum2,sum3;
+    wire cout,cout1;
+    add16 ins1(a[15:0], b[15:0], 0, sum1, cout);
+    add16 ins2(a[31:16], b[31:16], 0, sum2, cout1);
+    add16 ins3(a[31:16], b[31:16], 1, sum3, cout1);
+    always @(*) begin
+        case (cout)
+            1'b0:begin 
+                sum[31:0] = {sum2[15:0],sum1[15:0]};
+            end
+            1'b1:begin
+                sum = {sum3,sum1};
+            end
+        endcase
+    end
+endmodule
 ```
 
 #### - 加-减法器(Adder-subtractor)
 
+&emsp;&emsp;已为你提供了16位加法器add16模块,请实现如下图加法-减法器,通过一个32位"异或门"来决定加法或减法.  
+
+![module_addsub](./picture/module_addsub.png)
 
 - Module Declaraction 
 ```verilog
-
+module top_module(
+    input [31:0] a,
+    input [31:0] b,
+    input sub,
+    output [31:0] result
+);
 ```
 
 - Solution
 ```verilog
-
+module top_module(
+    input [31:0] a,
+    input [31:0] b,
+    input sub,
+    output [31:0] result
+);
+    
+    wire [31:0]invert;
+    wire [15:0]sum1,sum2;
+    wire cout,cout1;
+    assign invert[31:0] = b[31:0]^{32{sub}};
+    add16 ins1(a[15:0], invert[15:0], sub, sum1, cout);
+    add16 ins2(a[31:16], invert[31:16], cout, sum2, cout1);
+    assign result = {sum2,sum1};
+endmodule
 ```
 
 ---
@@ -961,107 +1044,454 @@ endmodule
 
 #### - Always块 -- 组合逻辑 (Always blocks -- Combinational)  
 
+&emsp;&emsp;由于数字电路是由与电线相连的逻辑门组成的，所以任何电路都可以表示为模块和赋值语句的某种组合.然而，有时这不是描述电路最方便的方法.
+
+&emsp;&emsp;两种always block是十分有用的:  
+
+- 组合逻辑: `always @(*)`
+- 时序逻辑: `always @(posedge clk)`
+
+&emsp;&emsp;`always @(*)`就相当于赋值语句--assign,因此选择哪一种语法仅仅取决与方便程度.block内还有更丰富的语句集,比如if-else,case等等.但不能包含连续赋值,即不可包含assign,因为他与always @(*)冲突.  
+> 以下语句是等价的
+```verilog
+assign out1 = a & b | c ^ d;
+always @(*) out2 = a & b | c ^ d;
+```
+
+![alwaysblock1](./picture/alwaysblock1.png)
+
 - Module Declaraction 
 ```verilog
-
+module top_module(
+    input a, 
+    input b,
+    output wire out_assign,
+    output reg out_alwaysblock
+);
 ```
 
 - Solution
 ```verilog
-
+// synthesis verilog_input_version verilog_2001
+module top_module(
+    input a, 
+    input b,
+    output wire out_assign,
+    output reg out_alwaysblock
+);
+	assign out_assign = a&b;
+    
+    always @(*) out_alwaysblock = a&b;
+endmodule
 ```
 
 #### - Always块 -- 时序逻辑 (Always blocks -- Clocked)  
 
+&emsp;&emsp;verilog中有三种赋值方式:
+
+- 连续赋值: `assign x = y;` 不能在always-block内使用
+- 阻塞赋值: `x = y;`,只能在always-block内使用 
+- 非阻塞赋值: `x <= y`,只能在always-block内使用
+
+> 请在组合逻辑中使用阻塞赋值,在时序逻辑中使用非阻塞赋值
+> 否则将产生难以发现的错误
+
+&emsp;&emsp;请实现如下电路:
+
+![alwaysblock2](./picture/alwaysblock2.png)
+
 - Module Declaraction 
 ```verilog
-
+module top_module(
+    input clk,
+    input a,
+    input b,
+    output wire out_assign,
+    output reg out_always_comb,
+    output reg out_always_ff   );
 ```
 
 - Solution
 ```verilog
-
+// synthesis verilog_input_version verilog_2001
+module top_module(
+    input clk,
+    input a,
+    input b,
+    output wire out_assign,
+    output reg out_always_comb,
+    output reg out_always_ff   );
+assign out_assign = a^b;
+    
+    always @(*) out_always_comb = a^b;
+    
+    always @(posedge clk) out_always_ff <= a^b;
+endmodule
 ```
 
 #### - If语句  
 
+&emsp;&emsp;if语句通常创建一个2对1的多路选择器，如果条件为真，则选择一个输入，如果条件为假，则选择另一个输入。一下两种写法是等价的:
+```verilog
+always @(*) begin
+    if (condition) begin
+        out = x;
+    end
+    else begin
+        out = y;
+    end
+end
+
+assign out = (condition) ? x : y;
+```
+&emsp;&emsp;建立一个在a和b之间选择的2对1多路选择器。如果sel_b1和sel_b2都为真，则选择b。否则，选择a。执行相同的操作两次，一次使用assign语句，一次使用if语句。  
+
+
+
 - Module Declaraction 
 ```verilog
-
+module top_module(
+    input a,
+    input b,
+    input sel_b1,
+    input sel_b2,
+    output wire out_assign,
+    output reg out_always   ); 
 ```
 
 - Solution
 ```verilog
-
+// synthesis verilog_input_version verilog_2001
+module top_module(
+    input a,
+    input b,
+    input sel_b1,
+    input sel_b2,
+    output wire out_assign,
+    output reg out_always   ); 
+    assign out_assign = (sel_b1&sel_b2)?b:a;
+    
+    always @(*) begin
+        if(sel_b1&sel_b2) begin
+            out_always = b;
+        end
+        else begin
+            out_always = a;
+        end
+    end
+endmodule
 ```
 
 #### - If语句引发的锁存(latches)  
 
+&emsp;&emsp;以下代码包含锁存的错误行为。修正这些错误，这样你只有在电脑过热的时候才会关掉它，你到达目的地或者需要加油的话就停止驾驶。
+
+![if](./picture/always_if2.png)
+
 - Module Declaraction 
 ```verilog
+always @(*) begin
+    if (cpu_overheated)
+       shut_off_computer = 1;
+end
 
+always @(*) begin
+    if (~arrived)
+       keep_driving = ~gas_tank_empty;
+end
 ```
 
 - Solution
 ```verilog
+// synthesis verilog_input_version verilog_2001
+module top_module (
+    input      cpu_overheated,
+    output reg shut_off_computer,
+    input      arrived,
+    input      gas_tank_empty,
+    output reg keep_driving  ); //
 
+    always @(*) begin
+        if (cpu_overheated) begin
+            shut_off_computer = 1;
+        end
+        else begin
+            shut_off_computer = 0;
+        end
+    end
+    
+    always @(*) begin
+        if (~arrived&~gas_tank_empty) begin
+            keep_driving = ~gas_tank_empty&(~arrived);
+       end
+       else begin
+           keep_driving = ~(gas_tank_empty|arrived);
+       end
+    end
+
+endmodule
 ```
 
 #### - Case语句  
 
+&emsp;&emsp;verilog中的case语句几乎等同于if elseif else的序列，该序列将一个表达式与其他表达式列表进行比较。它的语法和功能与C语言中的switch语句不同。
+```verilog
+always @(*) begin     // This is a combinational circuit
+    case (in)
+      1'b1: begin 
+               out = 1'b1;  // begin-end if >1 statement
+            end
+      1'b0: out = 1'b0;
+      default: out = 1'bx;
+    endcase
+end
+```
+
+- case语句以case开头,每个"case item"以冒号结尾,没有switch
+- 每个case项只能执行一条语句。这使得C中使用的“break”不必要.但这意味着如果需要多个语句,必须使用begin…end  
+
+&emsp;&emsp;如果有大量选项的情况，case语句比if语句更方便。因此，在本练习中，创建一个6对1的多路选择器.当sel介于0和5之间时，选择相应的数据输入,否则，输出0.数据输入和输出均为4位宽.小心锁存.
+
 - Module Declaraction 
 ```verilog
-
+module top_module ( 
+    input [2:0] sel, 
+    input [3:0] data0,
+    input [3:0] data1,
+    input [3:0] data2,
+    input [3:0] data3,
+    input [3:0] data4,
+    input [3:0] data5,
+    output reg [3:0] out   );
 ```
 
 - Solution
 ```verilog
+// synthesis verilog_input_version verilog_2001
+module top_module ( 
+    input [2:0] sel, 
+    input [3:0] data0,
+    input [3:0] data1,
+    input [3:0] data2,
+    input [3:0] data3,
+    input [3:0] data4,
+    input [3:0] data5,
+    output reg [3:0] out   );//
 
+    always@(*) begin  // This is a combinational circuit
+        case(sel)
+            3'b0: begin
+                out = data0;
+            end
+            3'b001: begin
+                out = data1;
+            end
+            3'b010: begin
+                out = data2;
+            end
+            3'b011: begin
+                out = data3;
+            end
+            3'b100: begin
+                out = data4;
+            end
+            3'b101: begin
+                out = data5;
+            end
+            default: begin
+                out[3:0] = 0;
+            end
+        endcase
+    end
+
+endmodule
 ```
 
 #### - 简单编码器1  
 
+&emsp;&emsp;priority encoder是一种组合电路,当输入一个vector时,输出第一个'1'出现的位置.例如:输入8'b10010000,输出3'd4,因为[4]是第一个高位.
+&emsp;&emsp;构建一个4位encoder,若全是低位则输出0.
+
 - Module Declaraction 
 ```verilog
-
+module top_module (
+    input [3:0] in,
+    output reg [1:0] pos  );
 ```
 
 - Solution
 ```verilog
-
+// synthesis verilog_input_version verilog_2001
+module top_module (
+    input [3:0] in,
+    output reg [1:0] pos  );
+    always @(*) begin
+        if (in[0] == 1'b1) begin
+                pos = 2'd0;
+        end
+        else begin
+            if(in[1] == 1'b1) begin
+                pos = 2'd1;
+            end
+            else begin
+                if(in[2] == 1'b1) begin
+                    pos = 2'd2;
+                end
+                else begin
+                    if(in[3] == 1'b1) begin
+                        pos = 2'd3;
+                    end
+                    else begin
+                        pos = 0;
+                    end
+                end
+            end
+        end
+    end
+endmodule
 ```
 
 #### - 简单编码器2  
 
+&emsp;&emsp;假如现在输入是8位,那么就会有256种情况,我们可以使用casez来将item减少到9种.  
+例如:
+```verilog
+always @(*) begin
+    casez (in[3:0])
+        4'bzzz1: out = 0;   // in[3:1] can be anything
+        4'bzz1z: out = 1;
+        4'bz1zz: out = 2;
+        4'b1zzz: out = 3;
+        default: out = 0;
+    endcase
+end
+```
+
 - Module Declaraction 
 ```verilog
-
+module top_module (
+    input [7:0] in,
+    output reg [2:0] pos  );
 ```
 
 - Solution
 ```verilog
-
+// synthesis verilog_input_version verilog_2001
+module top_module (
+    input [7:0] in,
+    output reg [2:0] pos  );
+always @(*) begin
+    casez (in[7:0])
+        8'bzzzzzzz1: begin
+            pos = 3'd0;
+        end
+        8'bzzzzzz1z: begin
+            pos = 3'd1;
+        end
+        8'bzzzzz1zz: begin
+            pos = 3'd2;
+        end
+        8'bzzzz1zzz: begin
+            pos = 3'd3;
+        end
+        8'bzzz1zzzz: begin
+            pos = 3'd4;
+        end
+        8'bzz1zzzzz: begin
+            pos = 3'd5;
+        end
+        8'bz1zzzzzz: begin
+            pos = 3'd6;
+        end
+        8'b1zzzzzzz: begin
+            pos = 3'd7;
+        end
+        default: begin
+            pos = 0;
+        end
+    endcase
+end
+endmodule
 ```
 
 #### - 避免锁存
 
+&emsp;&emsp;假设您正在构建一个电路来处理游戏中PS/2键盘的扫描代码。接收到的最后两个字节的扫描代码，您需要判断是否已按下键盘上的一个箭头键。这涉及到一个相当简单的映射，它可以使用一个case语句（或者如果elseif）实现，有四个case。
+
+|Scancode [15:0]|Arrow key|
+|:--:|:--:|
+|16'he06b|left arrow|
+|16'he072|down arrow|
+|16'he074|right arrow|
+|16'he075|up arrow|
+|Anything|else	none|
+
+&emsp;&emsp;为了避免创建锁存，必须在所有可能的条件下为所有输出分配一个值
+
 - Module Declaraction 
 ```verilog
-
+module top_module (
+    input [15:0] scancode,
+    output reg left,
+    output reg down,
+    output reg right,
+    output reg up  ); 
 ```
 
 - Solution
 ```verilog
-
+// synthesis verilog_input_version verilog_2001
+module top_module (
+    input [15:0] scancode,
+    output reg left,
+    output reg down,
+    output reg right,
+    output reg up  ); 
+    always @(*) begin
+        left = 0;
+        down = 0;
+        left = 0;
+        right = 0;
+        case (scancode)
+            16'he06b: begin
+                left = 1;
+            end
+            16'he072: begin
+                down = 1;
+            end
+            16'he074: begin
+                right = 1;
+            end
+            16'he075: begin
+                up = 1;
+            end
+            default: begin
+                up = 0;
+                down = 0;
+                left = 0;
+                right = 0;
+            end
+        endcase
+    end
+endmodule
 ```
 
 ---
 
 ### 更多语法特点  
 
+&emsp;&emsp;verilog也有像C一样的三目算符:  
+```verilog
+condition ? true : false;
+```
+
+&emsp;&emsp;给定四个无符号数，求其最小值。
+
 - Module Declaraction 
 ```verilog
-
+module top_module (
+    input [7:0] a, b, c, d,
+    output [7:0] min);
 ```
 
 - Solution
@@ -1071,73 +1501,190 @@ endmodule
 
 #### - 三目算符 
 
+&emsp;&emsp;verilog也有像C一样的三目算符:  
+```verilog
+condition ? true : false;
+```
+
+&emsp;&emsp;给定四个无符号数，求其最小值。
+
 - Module Declaraction 
 ```verilog
-
+module top_module (
+    input [7:0] a, b, c, d,
+    output [7:0] min);
 ```
 
 - Solution
 ```verilog
+module top_module (
+    input [7:0] a, b, c, d,
+    output [7:0] min);//
+
+    // assign intermediate_result1 = compare? true: false;
+	
+    wire [7:0]min1,min2;
+    assign min1=(a<b?a:b);
+    
+    assign min2 = (min1<c?min1:c);
+    
+    assign min = (min2<d?min2:d);
+endmodule
 
 ```
 
 #### - 优化运算1  
 
+&emsp;&emsp;奇偶校验经常被用来作为一种简单的方法检测错误。创建一个电路，该电路将为一个8位字节计算一个奇偶校验位.
+
+> 即计算输入8个位的异或
+
 - Module Declaraction 
 ```verilog
-
+module top_module (
+    input [7:0] in,
+    output parity); 
 ```
 
 - Solution
 ```verilog
-
+module top_module (
+    input [7:0] in,
+    output parity); 
+    assign parity = ^in[7:0];
+endmodule
 ```
 
 #### - 优化运算2  
 
+&emsp;&emsp;建立如下电路:  
+
+- `out_and`: 对输入数据求与  
+- `out_or`: 对输入数据求或  
+- `out_xor`:对输入数据求异或  
+
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input [99:0] in,
+    output out_and,
+    output out_or,
+    output out_xor 
+);
 ```
 
 - Solution
 ```verilog
-
+module top_module( 
+    input [99:0] in,
+    output out_and,
+    output out_or,
+    output out_xor 
+);
+    assign out_and = &in[99:0];
+    assign out_or = |in[99:0];
+    assign out_xor = ^in[99:0];
+endmodule
 ```
 
 #### - 循环 -- 组合逻辑:实现Vector反转  
 
+&emsp;&emsp;反转vector顺序
+
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input [99:0] in,
+    output [99:0] out
+);
 ```
 
 - Solution
 ```verilog
-
+module top_module( 
+    input [99:0] in,
+    output [99:0] out
+);
+    integer i;
+    always @(*) begin
+        for(i=0;i<=99;i=i+1)
+            out[7'd99-i] <= in[i];
+    end
+endmodule
 ```
 
 #### - 循环 -- 组合逻辑:实现255位计数器  
 
+&emsp;&emsp;计算vector中1的个数
+
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input [254:0] in,
+    output [7:0] out );
 ```
 
 - Solution
 ```verilog
-
+module top_module( 
+    input [254:0] in,
+    output [7:0] out );
+    integer i;
+    reg [7:0]count;
+    always @(*) begin
+        
+	count=0;
+        for(i=0;i<=254;i=i+1) begin
+            if(in[i] == 1) begin
+                count = count + 7'b1;
+            end
+        end
+    end
+    assign out = count;
+endmodule
 ```
 
 #### - 循环:实现100位加法器  
 
+&emsp;&emsp;通过实例化100个全加器构建一个100位加法器.
+
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input [99:0] a, b,
+    input cin,
+    output [99:0] cout,
+    output [99:0] sum );
 ```
 
 - Solution
 ```verilog
+module top_module( 
+    input [99:0] a, b,
+    input cin,
+    output [99:0] cout,
+    output [99:0] sum );
+    reg [100:0]cin1;
+
+    generate
+    genvar i;
+    for(i=0;i<100;i=i+1) begin:adds
+        
+        if(i==0) begin        
+		    add ins(a[i],b[i],cin,sum[i],cout[i]);            
+            assign cin1[i+1]=cout[i];
+        end            
+        else begin
+            add ins(a[i],b[i],cin1[i],sum[i],cout[i]);
+            assign cin1[i+1]=cout[i];            
+        end
+    end
+    endgenerate
+endmodule
+
+module add(input a, input b, input cin, output sum, output cout);
+    assign {cout,sum}=a+b+cin;
+endmodule
 
 ```
 
@@ -1161,74 +1708,125 @@ endmodule
 
 #### **基础门电路**   
 
-- Module Declaraction 
-```verilog
-
-```
-
-- Solution
-```verilog
-
-```
-
 #### - Wire类型  
 
+&emsp;&emsp;实现如下电路:
+
+![wire](./picture/q4h.png)
+
 - Module Declaraction 
 ```verilog
-
+module top_module (
+    input in,
+    output out);
 ```
 
 - Solution
 ```verilog
-
+module top_module (
+    input in,
+    output out);
+    
+assign out =in;
+endmodule
 ```
 
 #### - 接地 -- GND
 
+&emsp;&emsp;实现如下电路:
+
+![q4i](./picture/q4i.png)
+
 - Module Declaraction 
 ```verilog
-
+module top_module (
+    output out);
 ```
 
 - Solution
 ```verilog
-
+module top_module (
+    output out);
+assign out = 'b0;
+endmodule
 ```
 
 #### - 或非门 (NOR)  
 
+&emsp;&emsp;实现如下电路:
+
+![q4e](./picture/q4e.png)
+
 - Module Declaraction 
 ```verilog
-
+module top_module (
+    input in1,
+    input in2,
+    output out);
 ```
 
 - Solution
 ```verilog
-
+module top_module (
+    input in1,
+    input in2,
+    output out);
+    assign out = ~(in1|in2);
+endmodule
 ```
 
 #### - 其他的门  
 
+&emsp;&emsp;实现如下电路:
+
+![q4f](./picture/q4f.png)
+
 - Module Declaraction 
 ```verilog
-
+module top_module (
+    input in1,
+    input in2,
+    output out);
 ```
 
 - Solution
 ```verilog
-
+module top_module (
+    input in1,
+    input in2,
+    output out);
+assign out = in1&~in2;
+endmodule
 ```
 
 #### - 两个门  
 
+&emsp;&emsp;实现如下电路:
+
+![q4g](./picture/q4g.png)
+
 - Module Declaraction 
 ```verilog
-
+module top_module (
+    input in1,
+    input in2,
+    input in3,
+    output out);
 ```
 
 - Solution
 ```verilog
-
+module top_module (
+    input in1,
+    input in2,
+    input in3,
+    output out);
+ wire out1;
+    
+    assign out1 = ~(in1^in2);
+    
+assign out = in3^ out1;
+endmodule
 ```
 
 #### - 更多的逻辑门  
@@ -1245,14 +1843,29 @@ endmodule
 
 #### - 7420模块  
 
+&emsp;&emsp;创建如下电路:
+
+![7420](./picture/7420.png)
+
 - Module Declaraction 
 ```verilog
-
+module top_module ( 
+    input p1a, p1b, p1c, p1d,
+    output p1y,
+    input p2a, p2b, p2c, p2d,
+    output p2y );
 ```
 
 - Solution
 ```verilog
-
+module top_module ( 
+    input p1a, p1b, p1c, p1d,
+    output p1y,
+    input p2a, p2b, p2c, p2d,
+    output p2y );
+    assign p1y = ~(p1a&p1b&p1c&p1d);
+    assign p2y = ~(p2a&p2b&p2c&p2d);
+endmodule
 ```
 
 #### - 真值表  
@@ -1269,49 +1882,85 @@ endmodule
 
 #### - 小练习 -- Two-bit equality  
 
+&emsp;&emsp;若A==B则输出1,否则输出0
+
 - Module Declaraction 
 ```verilog
-
+module top_module ( input [1:0] A, input [1:0] B, output z ); 
 ```
 
 - Solution
 ```verilog
-
+module top_module ( input [1:0] A, input [1:0] B, output z ); 
+    assign z = ((A[1]==B[1])&&(A[0]==B[0]))?1:0;
+endmodule
 ```
 
 #### - 简单电路A  
 
+&emsp;&emsp;实现一个模块,具有`z = (x^y) & x`功能
+
 - Module Declaraction 
 ```verilog
-
+module top_module (input x, input y, output z);
 ```
 
 - Solution
 ```verilog
-
+module top_module (input x, input y, output z);
+    assign z = (x^y)&x;
+endmodule
 ```
 
 #### - 简单电路B  
 
+&emsp;&emsp;电路B可以通过以下模拟波形来描述：
+
+![q4b](./picture/q4b.png)
+
 - Module Declaraction 
 ```verilog
-
+module top_module ( input x, input y, output z );
 ```
 
 - Solution
 ```verilog
-
+module top_module ( input x, input y, output z );
+    assign z = ~(x^y);
+endmodule
 ```
 
 #### - 组合电路AB  
 
+&emsp;&emsp;通过电路A,B构建如下电路：
+
+![q4](./picture/q4.png)
+
 - Module Declaraction 
 ```verilog
-
+module top_module ( input x, input y, output z );
 ```
 
 - Solution
 ```verilog
+module top_module (input x, input y, output z);
+    wire z1,z2,z3,z4,out1,out2;
+    A ins1(x,y,z1);
+    B ins2(x,y,z2);
+    A ins3(x,y,z3);
+    B ins4(x,y,z4);
+    assign out1 = z1 | z2;
+    assign out2 = z3 & z4;
+    assign z = out1 ^ out2;
+endmodule
+
+module A(input x, input y, output z);
+    assign z = (x^y) & x;
+endmodule
+
+module B ( input x, input y, output z );
+    assign z = ~(x^y);
+endmodule
 
 ```
 
@@ -1329,111 +1978,333 @@ endmodule
 
 #### - 恒温器  
 
+&emsp;&emsp;实现一个加热/冷却恒温器控制器.执行一个电路，根据需要打开和关闭加热器、空调和鼓风机风扇。  
+
+&emsp;&emsp;恒温器可以处于两种模式之一：加热（mode=1）和冷却（mode=0）。在加热模式下，当加热器太冷（too_cold=1）时，打开加热器，但不要使用空调。在冷却模式下，当空调太热（too_hot=1）时打开空调，但不要打开加热器。当加热器或空调打开时，也打开风扇使空气循环。 
+
+&emsp;&emsp;此外，即使加热器和空调关闭，用户也可以请求风扇打开（fan_on=1）。  
+
+&emsp;&emsp;尝试只使用assign语句，以查看是否可以将问题描述转换为逻辑门集合。
+
 - Module Declaraction 
 ```verilog
-
+module top_module (
+    input too_cold,
+    input too_hot,
+    input mode,
+    input fan_on,
+    output heater,
+    output aircon,
+    output fan
+); 
 ```
 
 - Solution
 ```verilog
-
+module top_module (
+    input too_cold,
+    input too_hot,
+    input mode,
+    input fan_on,
+    output heater,
+    output aircon,
+    output fan
+); 
+    always @(*) begin
+        if(fan_on == 1) begin
+            fan = 1;
+        end
+        else begin
+            fan = 0;
+        end
+        if(mode == 1) begin
+            heater = mode;
+            if(too_cold) begin
+                heater = 1;
+                fan = 1;
+                aircon = 0;
+            end
+            else begin
+                heater = 0;
+                aircon = 0;
+            end
+        end
+            else begin 
+            if(too_hot) begin
+                aircon = 1;
+                fan = 1;
+                heater = 0;
+            end
+            else begin
+                aircon = 0;
+                heater = 0;
+            end
+        end
+    end
+endmodule
 ```
 
 #### - 3位计数器  
 
+&emsp;&emsp;计算3位vector中1的个数
+
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input [2:0] in,
+    output [1:0] out );
 ```
 
 - Solution
 ```verilog
-
+module top_module( 
+    input [2:0] in,
+    output [1:0] out );
+    reg [1:0]num;
+    integer i;
+    always @(*) begin
+        num = 0;
+        for(i=0;i<3;i=i+1) begin
+            if(in[i] == 1) begin
+                num = num + 2'b1;          
+            end
+        end       
+    end
+    assign out = num;
+endmodule
 ```
 
 #### - 门与容器  
 
+&emsp;&emsp;给定4位vector,请给出每个位与其相临位之间的关系.  
+- `out_both`: 判断相应位与其左临位是否均为1,不考虑`in[3]`
+- `out_any`: 判断相应位与其右临位是否含有'1',不考虑`in[0]`
+- `out_different`: 判断相应位与其左临位是否不同,`in[3[`是`in[0]`的左临位
+
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input [3:0] in,
+    output [2:0] out_both,
+    output [3:1] out_any,
+    output [3:0] out_different );
 ```
 
 - Solution
 ```verilog
-
+module top_module( 
+    input [3:0] in,
+    output [2:0] out_both,
+    output [3:1] out_any,
+    output [3:0] out_different );
+    integer i;
+    reg [2:0]both;
+    reg [3:1]any;
+    reg [3:0]different;
+    always @(*) begin
+        both = 0;
+        any = 0;
+        different = 0;
+        for(i=0;i<3;i=i+1) begin
+            if((in[i]&in[i+1]) == 1) begin
+                both[i] = 1;
+            end
+        end
+        for(i=1;i<4;i=i+1) begin
+            if((in[i]|in[i-1]) == 1) begin
+                any[i] = 1;
+            end
+        end
+        for(i=0;i<4;i=i+1) begin
+            if(i<3) begin
+                if(in[i]^in[i+1]) begin
+                    different[i] = 1;
+                end
+            end
+            else begin 
+                if(in[3]^in[0]) begin
+                    different[3] = 1;
+                end
+            end
+        end
+    end
+    assign out_both = both;
+    assign out_any[3:1] = any[3:1];
+    assign out_different = different;
+endmodule
 ```
 
 #### - 更长的数组  
 
+&emsp;&emsp;给定4位vector,请给出每个位与其相临位之间的关系.  
+- `out_both`: 判断相应位与其左临位是否均为1,不考虑`in[3]`
+- `out_any`: 判断相应位与其右临位是否含有'1',不考虑`in[0]`
+- `out_different`: 判断相应位与其左临位是否不同,`in[3[`是`in[0]`的左临位
+
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input [99:0] in,
+    output [98:0] out_both,
+    output [99:1] out_any,
+    output [99:0] out_different );
 ```
 
 - Solution
 ```verilog
+module top_module (
+	input [99:0] in,
+	output [98:0] out_both,
+	output [99:1] out_any,
+	output [99:0] out_different
+);
 
+	// See gatesv for explanations.
+	assign out_both = in & in[99:1];
+	assign out_any = in[99:1] | in ;
+	assign out_different = in ^ {in[0], in[99:1]};
+	
+endmodule
 ```
 
 ---
 
 #### **多路选择器**(Multiplexers)  
 
-- Module Declaraction 
-```verilog
-
-```
-
-- Solution
-```verilog
-
-```
 
 #### - 2选1多路选择器  
+&emsp;&emsp;创建一个1位宽的2对1多路选择器。当sel=0时，选择a；当sel=1时，选择b。
 
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input a, b, sel,
+    output out ); 	
 ```
 
 - Solution
 ```verilog
+module top_module (
+	input a,
+	input b,
+	input sel,
+	output out
+);
 
+	assign out = (sel & b) | (~sel & a);	// Mux expressed as AND and OR
+	
+	// Ternary operator is easier to read, especially if vectors are used:
+	// assign out = sel ? b : a;
+	
+endmodule
 ```
+
 #### - 2选1总线选择器  
 
+
+&emsp;&emsp;创建一个100位宽的2对1多路选择器。当sel=0时，选择a；当sel=1时，选择b。
+
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input [99:0] a, b,
+    input sel,
+    output [99:0] out );
 ```
 
 - Solution
 ```verilog
+module top_module (
+	input [99:0] a,
+	input [99:0] b,
+	input sel,
+	output [99:0] out
+);
 
+	assign out = sel ? b : a;
+	
+	// The following doesn't work. Why?
+	// assign out = (sel & b) | (~sel & a);
+	
+endmodule
 ```
+
 
 #### - 9选1多路选择器  
 
+&emsp;&emsp;创建一个16位宽的9对1多路选择器。sel=0选择a，sel=1选择b等。对于未使用的情况（sel=9到15），将所有输出位设置为“1”。
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input [15:0] a, b, c, d, e, f, g, h, i,
+    input [3:0] sel,
+    output [15:0] out );
 ```
 
 - Solution
 ```verilog
+module top_module (
+	input [15:0] a,
+	input [15:0] b,
+	input [15:0] c,
+	input [15:0] d,
+	input [15:0] e,
+	input [15:0] f,
+	input [15:0] g,
+	input [15:0] h,
+	input [15:0] i,
+	input [3:0] sel,
+	output logic [15:0] out
+);
 
+	// Case statements can only be used inside procedural blocks (always block)
+	// This is a combinational circuit, so use a combinational always @(*) block.
+	always @(*) begin
+		out = '1;		// '1 is a special literal syntax for a number with all bits set to 1.
+						// '0, 'x, and 'z are also valid.
+						// I prefer to assign a default value to 'out' instead of using a
+						// default case.
+		case (sel)
+			4'h0: out = a;
+			4'h1: out = b;
+			4'h2: out = c;
+			4'h3: out = d;
+			4'h4: out = e;
+			4'h5: out = f;
+			4'h6: out = g;
+			4'h7: out = h;
+			4'h8: out = i;
+		endcase
+	end
+	
+endmodule
 ```
 
 #### - 256选1多路选择器  
 
+
+&emsp;&emsp;创建一个1位宽、256对1的多路选择器。256个输入全部打包成一个256位输入vector。sel=0选择in[0]，sel=1选择in[1]，sel=2选择in[2]等等。
+
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input [255:0] in,
+    input [7:0] sel,
+    output out );
 ```
 
 - Solution
 ```verilog
+module top_module (
+	input [255:0] in,
+	input [7:0] sel,
+	output  out
+);
 
+	// Select one bit from vector in[]. The bit being selected can be variable.
+	assign out = in[sel];
+	
+endmodule
 ```
 
 #### - 256选1 4位选则器  
