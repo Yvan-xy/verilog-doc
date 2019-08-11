@@ -2309,13 +2309,25 @@ endmodule
 
 #### - 256选1 4位选则器  
 
+&emsp;&emsp;创建一个4位宽、256对1的多路选择器。sel=0应选择`in[3:0]`，sel=1选择`in[7:4]`，sel=2选择`in[11:8]`等。
+
 - Module Declaraction 
 ```verilog
-
+module top_module( 
+    input [1023:0] in,
+    input [7:0] sel,
+    output [3:0] out );
 ```
 
 - Solution
 ```verilog
+module top_module( 
+    input [1023:0] in,
+    input [7:0] sel,
+    output [3:0] out );
+    reg [7:0]index;
+    assign     out[3:0] = in[4*sel+:4];
+endmodule
 
 ```
 
