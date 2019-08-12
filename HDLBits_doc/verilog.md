@@ -34,7 +34,7 @@ endmodule
 
 &emsp;&emsp;建立一个没有输入,输出为常数0的电路.
 
-&emsp;&emsp;本系列题使用***verilog-2001 ANSI-style*** 的端口声明语法，因为它更容易阅读并减少了拼写错误。如果愿意，可以使用旧的verilog-1995语法。例如，下面的两个模块声明是可接受的和等效的:  
+&emsp;&emsp;本系列题使用***verilog-2001 ANSI-style*** 的端口声明语法,因为它更容易阅读并减少了拼写错误.如果愿意,可以使用旧的verilog-1995语法.例如,下面的两个模块声明是可接受的和等效的:  
 
 ```verilog
 module top_moduel(zero);
@@ -73,18 +73,18 @@ endmodule
 
 &emsp;&emsp;创建一个具有一个输入和一个输出的模块,其行为想一条"线"(Wire).  
 
-&emsp;&emsp;与物理线不同但十分相似,Verilog中的线(和其他信号)是定向的。这意味着信息只在一个方向上流动,从(通常是一个)源流向汇点(该源通常也被称为驱动程序，将值驱动到wire上).在verilog"连续赋值"(assign left_side=right_side;)中，右侧的信号值被驱动到左侧的"线"上.请注意:赋值是"***连续的***"(Continuous Assignments),因为如果右侧的值发生更改,分配也会一直持续,因此左侧的值将随之改变.(这里与其他语言有很大区别).连续分配不是一次性事件,其产生的变化是永久的.
+&emsp;&emsp;与物理线不同但十分相似,Verilog中的线(和其他信号)是定向的.这意味着信息只在一个方向上流动,从(通常是一个)源流向汇点(该源通常也被称为驱动程序,将值驱动到wire上).在verilog"连续赋值"(assign left_side=right_side;)中,右侧的信号值被驱动到左侧的"线"上.请注意:赋值是"***连续的***"(Continuous Assignments),因为如果右侧的值发生更改,分配也会一直持续,因此左侧的值将随之改变.(这里与其他语言有很大区别).连续分配不是一次性事件,其产生的变化是永久的.
 
 > 想要真正理解为啥会这样,你首先要明白,你并不是在编写程序,你其实是在用代码"画"电路!
 > 因此输入端的电平高低的变化必然会影响到wire的另一端,你可以想像真的有一根电线连接两个变量.
 
-&emsp;&emsp;模块(module)上的端口(port)也有一个方向(通常是输入 -- input或输出 -- output)。输入端口由来自模块外部的东西驱动，而输出端口驱动外部的东西。从模块内部查看时，输入端口是驱动程序或源，而输出端口是接收器。
+&emsp;&emsp;模块(module)上的端口(port)也有一个方向(通常是输入 -- input或输出 -- output).输入端口由来自模块外部的东西驱动,而输出端口驱动外部的东西.从模块内部查看时,输入端口是驱动程序或源,而输出端口是接收器.
 
-&emsp;&emsp;下图说明了电路的每个部分如何对应Verilog代码的每个部分.模块和端口声明创建电路的黑色部分。您的任务是通过添加一个assign语句来创建一条线(绿色).盒子外的部件不是您的问题，但您应该知道,通过将测试激励连接到top_module上的端口来测试电路。
+&emsp;&emsp;下图说明了电路的每个部分如何对应Verilog代码的每个部分.模块和端口声明创建电路的黑色部分.您的任务是通过添加一个assign语句来创建一条线(绿色).盒子外的部件不是您的问题,但您应该知道,通过将测试激励连接到top_module上的端口来测试电路.
 
 ![sp_wire](./picture/sp_wire.png)  
 
-> 除了连续赋值之外，Verilog还有另外三种用于程序块(Procedural block)的赋值类型,其中两种是可综合的.在开始使用Procedural block之前，我们不会使用它们。
+> 除了连续赋值之外,Verilog还有另外三种用于程序块(Procedural block)的赋值类型,其中两种是可综合的.在开始使用Procedural block之前,我们不会使用它们.
 
 - Module Declaraction
 ```verilog
@@ -142,7 +142,7 @@ endmodule
 
 &emsp;&emsp;创建实现非门的模块.  
 
-&emsp;&emsp;这个电路和电线相似,但有点不同.当把电线从进线连接到出线时,我们要实现一个反相器(非门)，而不是一根普通的线.  
+&emsp;&emsp;这个电路和电线相似,但有点不同.当把电线从进线连接到出线时,我们要实现一个反相器(非门),而不是一根普通的线.  
 
 &emsp;&emsp;使用assign语句.assign语句将连续地将in取反并输出.  
 
@@ -346,7 +346,7 @@ endmodule
 
 &emsp;&emsp;vector被用来对相关的信号进行分组,以便于操作.例如,`Wire[7:0]w`;声明一个名为w 的 8 位数组,在功能上相当于具有8条独立的线.  
 
-&emsp;&emsp;请注意，vector的声明将维度(dimensions 即数组长度)放在容器名称之前,这与C语法相比不常见.  
+&emsp;&emsp;请注意,vector的声明将维度(dimensions 即数组长度)放在容器名称之前,这与C语法相比不常见.  
 
 > 至于为什么会是如下声明,主要是采用了小端序.
 
@@ -450,11 +450,11 @@ endmodule
 
 #### - 容器的片选(Vector part select)  
 
-&emsp;&emsp;32位矢量可以被视为包含4个字节（位[31:24]、[23:16]等）。建立一个电路，使4字节字颠倒顺序。
+&emsp;&emsp;32位矢量可以被视为包含4个字节(位[31:24]、[23:16]等).建立一个电路,使4字节字颠倒顺序.
 ```
 aaaaaaaabbbbbbcccccccccddddddd=>ddddddddccccccccccbbbbbbbaaaaaaaa
 ```
-&emsp;&emsp;此操作通常在需要交换一段数据的结束地址时使用，例如在Little Endian(小端序) x86系统和许多Internet协议中使用的Big Endian(大端序格式之间。
+&emsp;&emsp;此操作通常在需要交换一段数据的结束地址时使用,例如在Little Endian(小端序) x86系统和许多Internet协议中使用的Big Endian(大端序格式之间.
 
 - Module Declaraction 
 ```verilog
@@ -482,7 +482,7 @@ endmodule
 
 #### - 位级操作(Bitwise operators)  
 
-&emsp;&emsp;建立一个电路,该电路有两个3-bits输入,用于计算两个vector的"基于位"的或(bitwise-OR)、两个矢量的"逻辑或"(Logical-OR)和两个矢量的非(NOT).将b的非放在out-not的高位部分(即[5:3]),将a的非放在低位部分。
+&emsp;&emsp;建立一个电路,该电路有两个3-bits输入,用于计算两个vector的"基于位"的或(bitwise-OR)、两个矢量的"逻辑或"(Logical-OR)和两个矢量的非(NOT).将b的非放在out-not的高位部分(即[5:3]),将a的非放在低位部分.
 
 &emsp;&emsp;看看模拟波形,看看bitwise-OR与Logical-OR的区别.
 
@@ -562,8 +562,8 @@ endmodule
 {1'b1, 1'b0, 3'b101} => 5'b10101
 {4'ha, 4'd10} => 8'b10101010     // 4'ha and 4'd10 are both 4'b1010 in binary
 ```
-&emsp;&emsp;连接需要知道每个组件的宽度,因此,{1,2,3}是非法的,并导致错误消息：串联中不允许使用未经大小化的常量。
-连接操作符可以在赋值的左侧和右侧使用。
+&emsp;&emsp;连接需要知道每个组件的宽度,因此,{1,2,3}是非法的,并导致错误消息：串联中不允许使用未经大小化的常量.
+连接操作符可以在赋值的左侧和右侧使用.
 ```verilog
 input [15:0] in;
 output [23:0] out;
@@ -701,7 +701,7 @@ endmodule
 #### - 模块  
 
 
-&emsp;&emsp;现在你已经对module很熟悉了,模块实际上就是封装起来的电路.下图显示了一个带有子模块的非常简单的电路.在本练习中,创建模块mod_a的一个实例,然后将模块的三个插脚(in1、in2和out)连接到顶级模块的三个端口(wire a、b和out).模块mod_a是为您提供的,您必须实例化它。
+&emsp;&emsp;现在你已经对module很熟悉了,模块实际上就是封装起来的电路.下图显示了一个带有子模块的非常简单的电路.在本练习中,创建模块mod_a的一个实例,然后将模块的三个插脚(in1、in2和out)连接到顶级模块的三个端口(wire a、b和out).模块mod_a是为您提供的,您必须实例化它.
 
 ![module](./picture/module.png)  	
 
@@ -731,7 +731,7 @@ endmodule
 
 #### - 按位置连接端口(Connecting ports by position)  
 
-&emsp;&emsp;此问题与前一个问题（模块）类似。您将得到一个名为mod_a的模块，该模块按顺序具有2个输出和4个输入。您必须按位置将6个端口连接到顶级模块的端口out1、out2、A、B、C和D，顺序如下。
+&emsp;&emsp;此问题与前一个问题(模块)类似.您将得到一个名为mod_a的模块,该模块按顺序具有2个输出和4个输入.您必须按位置将6个端口连接到顶级模块的端口out1、out2、A、B、C和D,顺序如下.
 您将获得以下模块：
 
 `module mod_a ( output, output, input, input, input, input );`
@@ -836,7 +836,7 @@ endmodule
 
 #### - 模块与容器  
 
-&emsp;&emsp;我们为您提供了一个模块my-dff8,它有两个输入和一个输出(实现一组8 D-触发器)。实例化其中三个,然后将它们链接在一起,形成长度为3的8位宽移位寄存器.此外,创建一个4对1多路选择器,根据sel[1:0]选择输出内容.
+&emsp;&emsp;我们为您提供了一个模块my-dff8,它有两个输入和一个输出(实现一组8 D-触发器).实例化其中三个,然后将它们链接在一起,形成长度为3的8位宽移位寄存器.此外,创建一个4对1多路选择器,根据sel[1:0]选择输出内容.
 
 ![module_shift8](./picture/module_shift8.png)
 
@@ -1044,7 +1044,7 @@ endmodule
 
 #### - Always块 -- 组合逻辑 (Always blocks -- Combinational)  
 
-&emsp;&emsp;由于数字电路是由与电线相连的逻辑门组成的，所以任何电路都可以表示为模块和赋值语句的某种组合.然而，有时这不是描述电路最方便的方法.
+&emsp;&emsp;由于数字电路是由与电线相连的逻辑门组成的,所以任何电路都可以表示为模块和赋值语句的某种组合.然而,有时这不是描述电路最方便的方法.
 
 &emsp;&emsp;两种always block是十分有用的:  
 
@@ -1131,7 +1131,7 @@ endmodule
 
 #### - If语句  
 
-&emsp;&emsp;if语句通常创建一个2对1的多路选择器，如果条件为真，则选择一个输入，如果条件为假，则选择另一个输入。一下两种写法是等价的:
+&emsp;&emsp;if语句通常创建一个2对1的多路选择器,如果条件为真,则选择一个输入,如果条件为假,则选择另一个输入.一下两种写法是等价的:
 ```verilog
 always @(*) begin
     if (condition) begin
@@ -1144,7 +1144,7 @@ end
 
 assign out = (condition) ? x : y;
 ```
-&emsp;&emsp;建立一个在a和b之间选择的2对1多路选择器。如果sel_b1和sel_b2都为真，则选择b。否则，选择a。执行相同的操作两次，一次使用assign语句，一次使用if语句。  
+&emsp;&emsp;建立一个在a和b之间选择的2对1多路选择器.如果sel_b1和sel_b2都为真,则选择b.否则,选择a.执行相同的操作两次,一次使用assign语句,一次使用if语句.  
 
 
 
@@ -1184,7 +1184,7 @@ endmodule
 
 #### - If语句引发的锁存(latches)  
 
-&emsp;&emsp;以下代码包含锁存的错误行为。修正这些错误，这样你只有在电脑过热的时候才会关掉它，你到达目的地或者需要加油的话就停止驾驶。
+&emsp;&emsp;以下代码包含锁存的错误行为.修正这些错误,这样你只有在电脑过热的时候才会关掉它,你到达目的地或者需要加油的话就停止驾驶.
 
 ![if](./picture/always_if2.png)
 
@@ -1234,7 +1234,7 @@ endmodule
 
 #### - Case语句  
 
-&emsp;&emsp;verilog中的case语句几乎等同于if elseif else的序列，该序列将一个表达式与其他表达式列表进行比较。它的语法和功能与C语言中的switch语句不同。
+&emsp;&emsp;verilog中的case语句几乎等同于if elseif else的序列,该序列将一个表达式与其他表达式列表进行比较.它的语法和功能与C语言中的switch语句不同.
 ```verilog
 always @(*) begin     // This is a combinational circuit
     case (in)
@@ -1248,9 +1248,9 @@ end
 ```
 
 - case语句以case开头,每个"case item"以冒号结尾,没有switch
-- 每个case项只能执行一条语句。这使得C中使用的“break”不必要.但这意味着如果需要多个语句,必须使用begin…end  
+- 每个case项只能执行一条语句.这使得C中使用的“break”不必要.但这意味着如果需要多个语句,必须使用begin…end  
 
-&emsp;&emsp;如果有大量选项的情况，case语句比if语句更方便。因此，在本练习中，创建一个6对1的多路选择器.当sel介于0和5之间时，选择相应的数据输入,否则，输出0.数据输入和输出均为4位宽.小心锁存.
+&emsp;&emsp;如果有大量选项的情况,case语句比if语句更方便.因此,在本练习中,创建一个6对1的多路选择器.当sel介于0和5之间时,选择相应的数据输入,否则,输出0.数据输入和输出均为4位宽.小心锁存.
 
 - Module Declaraction 
 ```verilog
@@ -1416,7 +1416,7 @@ endmodule
 
 #### - 避免锁存
 
-&emsp;&emsp;假设您正在构建一个电路来处理游戏中PS/2键盘的扫描代码。接收到的最后两个字节的扫描代码，您需要判断是否已按下键盘上的一个箭头键。这涉及到一个相当简单的映射，它可以使用一个case语句（或者如果elseif）实现，有四个case。
+&emsp;&emsp;假设您正在构建一个电路来处理游戏中PS/2键盘的扫描代码.接收到的最后两个字节的扫描代码,您需要判断是否已按下键盘上的一个箭头键.这涉及到一个相当简单的映射,它可以使用一个case语句(或者如果elseif)实现,有四个case.
 
 |Scancode [15:0]|Arrow key|
 |:--:|:--:|
@@ -1426,7 +1426,7 @@ endmodule
 |16'he075|up arrow|
 |Anything|else	none|
 
-&emsp;&emsp;为了避免创建锁存，必须在所有可能的条件下为所有输出分配一个值
+&emsp;&emsp;为了避免创建锁存,必须在所有可能的条件下为所有输出分配一个值
 
 - Module Declaraction 
 ```verilog
@@ -1485,7 +1485,7 @@ endmodule
 condition ? true : false;
 ```
 
-&emsp;&emsp;给定四个无符号数，求其最小值。
+&emsp;&emsp;给定四个无符号数,求其最小值.
 
 - Module Declaraction 
 ```verilog
@@ -1506,7 +1506,7 @@ module top_module (
 condition ? true : false;
 ```
 
-&emsp;&emsp;给定四个无符号数，求其最小值。
+&emsp;&emsp;给定四个无符号数,求其最小值.
 
 - Module Declaraction 
 ```verilog
@@ -1535,7 +1535,7 @@ endmodule
 
 #### - 优化运算1  
 
-&emsp;&emsp;奇偶校验经常被用来作为一种简单的方法检测错误。创建一个电路，该电路将为一个8位字节计算一个奇偶校验位.
+&emsp;&emsp;奇偶校验经常被用来作为一种简单的方法检测错误.创建一个电路,该电路将为一个8位字节计算一个奇偶校验位.
 
 > 即计算输入8个位的异或
 
@@ -1978,13 +1978,13 @@ endmodule
 
 #### - 恒温器  
 
-&emsp;&emsp;实现一个加热/冷却恒温器控制器.执行一个电路，根据需要打开和关闭加热器、空调和鼓风机风扇。  
+&emsp;&emsp;实现一个加热/冷却恒温器控制器.执行一个电路,根据需要打开和关闭加热器、空调和鼓风机风扇.  
 
-&emsp;&emsp;恒温器可以处于两种模式之一：加热（mode=1）和冷却（mode=0）。在加热模式下，当加热器太冷（too_cold=1）时，打开加热器，但不要使用空调。在冷却模式下，当空调太热（too_hot=1）时打开空调，但不要打开加热器。当加热器或空调打开时，也打开风扇使空气循环。 
+&emsp;&emsp;恒温器可以处于两种模式之一：加热(mode=1)和冷却(mode=0).在加热模式下,当加热器太冷(too_cold=1)时,打开加热器,但不要使用空调.在冷却模式下,当空调太热(too_hot=1)时打开空调,但不要打开加热器.当加热器或空调打开时,也打开风扇使空气循环. 
 
-&emsp;&emsp;此外，即使加热器和空调关闭，用户也可以请求风扇打开（fan_on=1）。  
+&emsp;&emsp;此外,即使加热器和空调关闭,用户也可以请求风扇打开(fan_on=1).  
 
-&emsp;&emsp;尝试只使用assign语句，以查看是否可以将问题描述转换为逻辑门集合。
+&emsp;&emsp;尝试只使用assign语句,以查看是否可以将问题描述转换为逻辑门集合.
 
 - Module Declaraction 
 ```verilog
@@ -2173,7 +2173,7 @@ endmodule
 
 
 #### - 2选1多路选择器  
-&emsp;&emsp;创建一个1位宽的2对1多路选择器。当sel=0时，选择a；当sel=1时，选择b。
+&emsp;&emsp;创建一个1位宽的2对1多路选择器.当sel=0时,选择a；当sel=1时,选择b.
 
 - Module Declaraction 
 ```verilog
@@ -2202,7 +2202,7 @@ endmodule
 #### - 2选1总线选择器  
 
 
-&emsp;&emsp;创建一个100位宽的2对1多路选择器。当sel=0时，选择a；当sel=1时，选择b。
+&emsp;&emsp;创建一个100位宽的2对1多路选择器.当sel=0时,选择a；当sel=1时,选择b.
 
 - Module Declaraction 
 ```verilog
@@ -2232,7 +2232,7 @@ endmodule
 
 #### - 9选1多路选择器  
 
-&emsp;&emsp;创建一个16位宽的9对1多路选择器。sel=0选择a，sel=1选择b等。对于未使用的情况（sel=9到15），将所有输出位设置为“1”。
+&emsp;&emsp;创建一个16位宽的9对1多路选择器.sel=0选择a,sel=1选择b等.对于未使用的情况(sel=9到15),将所有输出位设置为“1”.
 - Module Declaraction 
 ```verilog
 module top_module( 
@@ -2283,7 +2283,7 @@ endmodule
 #### - 256选1多路选择器  
 
 
-&emsp;&emsp;创建一个1位宽、256对1的多路选择器。256个输入全部打包成一个256位输入vector。sel=0选择in[0]，sel=1选择in[1]，sel=2选择in[2]等等。
+&emsp;&emsp;创建一个1位宽、256对1的多路选择器.256个输入全部打包成一个256位输入vector.sel=0选择in[0],sel=1选择in[1],sel=2选择in[2]等等.
 
 - Module Declaraction 
 ```verilog
@@ -2309,7 +2309,7 @@ endmodule
 
 #### - 256选1 4位选则器  
 
-&emsp;&emsp;创建一个4位宽、256对1的多路选择器。sel=0应选择`in[3:0]`，sel=1选择`in[7:4]`，sel=2选择`in[11:8]`等。
+&emsp;&emsp;创建一个4位宽、256对1的多路选择器.sel=0应选择`in[3:0]`,sel=1选择`in[7:4]`,sel=2选择`in[11:8]`等.
 
 - Module Declaraction 
 ```verilog
@@ -2329,6 +2329,260 @@ module top_module(
     assign     out[3:0] = in[4*sel+:4];
 endmodule
 
+```
+
+#### **运算电路**
+
+#### - 半加器  
+
+创建一个半加器,对两个位做加法并输出结果与进位.  
+
+- Module Declaraction
+```verilog
+module top_module( 
+    input a, b,
+    output cout, sum );
+```
+
+- Solution
+```verilog
+module top_module( 
+    input a, b,
+    output cout, sum );
+    assign {cout,sum} = a + b;
+endmodule
+```
+
+#### - 全加器
+
+&emsp;&emsp;创建一个全加器,对两位及进位做加法,输出结果与进位
+
+- Module Declaraction 
+```verilog
+module top_module( 
+    input a, b, cin,
+    output cout, sum );
+```
+
+- Solution
+```verilog
+module top_module( 
+    input a, b, cin,
+    output cout, sum );
+    assign {cout,sum} = a + b + cin;
+endmodule
+```
+
+#### - 3位加法器
+
+&emsp;&emsp;创建一个三位全加器,把每位相加的进位都输出出来.  
+
+- Module Declaraction
+```verilog
+module top_module( 
+    input [2:0] a, b,
+    input cin,
+    output [2:0] cout,
+    output [2:0] sum );
+```
+
+- Solution
+```verilog
+module top_module( 
+    input [2:0] a, b,
+    input cin,
+    output [2:0] cout,
+    output [2:0] sum );
+    FullAdder ins1(a[0],b[0],cin,cout[0],sum[0]);
+    FullAdder ins2(a[1],b[1],cout[0],cout[1],sum[1]);
+    FullAdder ins3(a[2],b[2],cout[1],cout[2],sum[2]);
+endmodule
+
+module FullAdder(
+    input a, b, cin,
+    output cout, sum
+);
+    assign {cout, sum} = a + b + cin;
+endmodule
+```
+
+#### -adder练习
+
+&emsp;&emsp;实现如下电路:
+
+![q4j.png](./picture/q4j.png)
+
+
+- Module Declaraction 
+```verilog
+module top_module (
+    input [3:0] x,
+    input [3:0] y, 
+    output [4:0] sum);
+```
+
+- Solution
+```verilog
+module top_module (
+	input [3:0] x,
+	input [3:0] y,
+	output [4:0] sum
+);
+
+	// This circuit is a 4-bit ripple-carry adder with carry-out.
+	assign sum = x+y;	// Verilog addition automatically produces the carry-out bit.
+
+	// Verilog quirk: Even though the value of (x+y) includes the carry-out, (x+y) is still considered to be a 4-bit number (The max width of the two operands).
+	// This is correct:
+	// assign sum = (x+y);
+	// But this is incorrect:
+	// assign sum = {x+y};	// Concatenation operator: This discards the carry-out
+endmodule
+```
+
+#### - 溢出检测  
+
+&emsp;&emsp;假设您有两个8位的补码,A[7:0]和B[7:0].这些数字加在一起产生s[7:0].还要计算是否发生了(有符号的)溢出.
+
+
+- Module Declaraction 
+```verilog
+module top_module (
+    input [7:0] a,
+    input [7:0] b,
+    output [7:0] s,
+    output overflow
+); 
+```
+
+- Solution
+```verilog
+module top_module (
+    input [7:0] a,
+    input [7:0] b, 
+    output [7:0] s,
+    output overflow
+);
+    EightBitsAdder ins(a, b, s, overflow);
+endmodule
+
+module FullAdder(
+    input a, b, cin,
+    output sum, cout
+);
+    assign {cout, sum} = a + b + cin;
+endmodule
+
+module EightBitsAdder(
+    input [7:0] x,
+    input [7:0] y,
+    output [7:0] s,
+    output overflow
+);
+    wire [7:0] cout1;
+    FullAdder ins0(x[0],y[0],0,s[0],cout1[0]);
+    FullAdder ins1(x[1],y[1],cout1[0],s[1],cout1[1]);
+    FullAdder ins2(x[2],y[2],cout1[1],s[2],cout1[2]);
+    FullAdder ins3(x[3],y[3],cout1[2],s[3],cout1[3]);
+    FullAdder ins4(x[4],y[4],cout1[3],s[4],cout1[4]);
+    FullAdder ins5(x[5],y[5],cout1[4],s[5],cout1[5]);
+    FullAdder ins6(x[6],y[6],cout1[5],s[6],cout1[6]);
+    FullAdder ins7(x[7],y[7],cout1[6],s[7],cout1[7]);
+    always @(*) begin
+        if(cout1[7]^cout1[6]) begin
+            overflow = 1;
+        end
+        else begin
+            overflow = 0;
+        end
+    end
+endmodule
+```
+
+#### - 100位加法器
+
+&emsp;&emsp;创建一个100位加法器.
+
+- Module Declaraction 
+```verilog
+module top_module( 
+    input [99:0] a, b,
+    input cin,
+    output cout,
+    output [99:0] sum );
+```
+
+- Solution
+```verilog
+module top_module( 
+    input [99:0] a, b,
+    input cin,
+    output cout,
+    output [99:0] sum );
+    assign {cout,sum} = a+b+cin;
+endmodule
+```
+
+#### - BCD加法器  
+
+&emsp;&emsp;您将获得一个BCD(二进制编码十进制)一位加法器,名为BCD_fadd,它对两个BCD数字及进位做加法,产生一个和与进位.
+```verilog
+module bcd_fadd {
+    input [3:0] a,
+    input [3:0] b,
+    input     cin,
+    output   cout,
+    output [3:0] sum );
+```
+&emsp;&emsp;创建一个4BCD位加法器.  
+
+
+- Module Declaraction 
+```verilog
+module top_module( 
+    input [15:0] a, b,
+    input cin,
+    output cout,
+    output [15:0] sum );
+```
+
+- Solution
+```verilog
+module top_module (
+  input [15:0] a, b,
+  input cin,
+  output cout,
+  output [15:0] sum
+);
+
+  wire [3:0] inter_cout;
+
+  bcd_fadd bcd_fadd0_inst
+  (
+    .a(a[3:0]),
+    .b(b[3:0]),
+    .cin(cin),
+    .cout(inter_cout[0]),
+    .sum(sum[3:0])
+  );
+
+  genvar i;
+  generate
+    for (i = 1; i <=3; i = i + 1) begin: gen_bcd_adders
+      bcd_fadd bcd_fadd_insts
+      (
+        .a(a[4*(i+1)-1 : 4*i]),
+        .b(b[4*(i+1)-1 : 4*i]),
+        .cin(inter_cout[i-1]),
+        .cout(inter_cout[i]),
+        .sum(sum[4*(i+1)-1 : 4*i])
+      );
+    end
+  endgenerate
+
+  assign cout = inter_cout[3];
+
+endmodule
 ```
 
 ---
@@ -2439,12 +2693,12 @@ endmodule
 
 #### - D-触发器(D flip-flops)  
 
-&emsp;&emsp;D-触发器可以存储一个bit数据并根据时钟信号周期的更新数据，一般是由正边沿触发。
-&emsp;&emsp;D-触发器由逻辑合成器(Logic synthesizer)在使用"Always block"时创建(参见AlwaysBlock2)。D-触发器是"组合逻辑块之后连接触发器"的最简单形式，其中组合逻辑部分只是一个wire类型变量。
+&emsp;&emsp;D-触发器可以存储一个bit数据并根据时钟信号周期的更新数据,一般是由正边沿触发.
+&emsp;&emsp;D-触发器由逻辑合成器(Logic synthesizer)在使用"Always block"时创建(参见AlwaysBlock2).D-触发器是"组合逻辑块之后连接触发器"的最简单形式,其中组合逻辑部分只是一个wire类型变量.
 
 ![dff](./picture/Dff.png)  
 
-&emsp;&emsp;创建一个D-触发器。
+&emsp;&emsp;创建一个D-触发器.
 
 - **Module Declaration**  
 
@@ -2476,7 +2730,7 @@ endmodule
 
 #### - D触发器组合  
 
-&emsp;&emsp;创建8个D触发器，所有的D触发器均由时钟上升沿触发。  
+&emsp;&emsp;创建8个D触发器,所有的D触发器均由时钟上升沿触发.  
 
 - **Module Declaration**
 ```verilog
@@ -2501,7 +2755,7 @@ endmodule
 ```
 
 #### - 可复位(Reset)的DFF  
-&emsp;&emsp;使用主动高位同步复位信号(Reset)创建8个D-触发器。所有的触发器均由时钟上升沿信号触发.  
+&emsp;&emsp;使用主动高位同步复位信号(Reset)创建8个D-触发器.所有的触发器均由时钟上升沿信号触发.  
 
 - **Module Declaration**  
 ```verilog
@@ -2528,7 +2782,7 @@ endmodule
 ```
 
 #### - 可复位为特殊值的D-触发器  
-&emsp;&emsp;使用主动高位同步复位信号(Reset)创建8个D-触发器。触发器必须重置为0x34而不是零。所有DFF都应该由CLK的下降沿触发。
+&emsp;&emsp;使用主动高位同步复位信号(Reset)创建8个D-触发器.触发器必须重置为0x34而不是零.所有DFF都应该由CLK的下降沿触发.
 
 - **Module Declaration**
 ```verilog
@@ -2561,7 +2815,7 @@ endmodule
 
 #### - 可异步复位的触发器(Asynchronous Reset)  
 
-&emsp;&emsp;使用主动高位异步复位信号创建8个D-触发器。所有DFF都应该由时钟上升沿触发。 
+&emsp;&emsp;使用主动高位异步复位信号创建8个D-触发器.所有DFF都应该由时钟上升沿触发. 
 
 - **Module Declaration**
 ```verilog
@@ -2594,9 +2848,9 @@ endmodule
 
 #### - 有开关的触发器  
 
-&emsp;&emsp;创建16个D-触发器。有时我们希望只修改触发器组的部分值。输入的***开关字节***控制16个寄存器的每个字节是否应在该循环中写入。`byteena[1]`控制上字节`d[15:8]`，而`byteena[0]`控制下字节`d[7:0]`。
-&emsp;&emsp;`resetn`是一个同步的、主动的低重置。
-&emsp;&emsp;所有DFF都应该由时钟的上升沿触发。
+&emsp;&emsp;创建16个D-触发器.有时我们希望只修改触发器组的部分值.输入的***开关字节***控制16个寄存器的每个字节是否应在该循环中写入.`byteena[1]`控制上字节`d[15:8]`,而`byteena[0]`控制下字节`d[7:0]`.
+&emsp;&emsp;`resetn`是一个同步的、主动的低重置.
+&emsp;&emsp;所有DFF都应该由时钟的上升沿触发.
 
 - **Module Delclaration**  
 ```verilog
@@ -2986,9 +3240,9 @@ endmodule
 
 #### - 边缘捕获寄存器(Edge capture register)  
 
-&emsp;&emsp;对于32位Vector中的每一位，当输入信号在一个时钟周期内从1变为下一个时钟周期的0时进行捕获。"捕获"表示输出将保持1，直到寄存器复位（同步复位 -- Synchronous Reset）。
+&emsp;&emsp;对于32位Vector中的每一位,当输入信号在一个时钟周期内从1变为下一个时钟周期的0时进行捕获."捕获"表示输出将保持1,直到寄存器复位(同步复位 -- Synchronous Reset).
 
-&emsp;&emsp;每个输出位的行为类似于SR触发器：在发生1到0的转换之后，输出位应该被设置为1。当复位为高电平时，输出位应在上升沿复位(至0)。如果上述两个事件同时发生，则重置(Reset)具有优先权。在下面示例波形的最后4个周期中，"Reset"事件比"Set"事件早一个周期，因此这里没有冲突。
+&emsp;&emsp;每个输出位的行为类似于SR触发器：在发生1到0的转换之后,输出位应该被设置为1.当复位为高电平时,输出位应在上升沿复位(至0).如果上述两个事件同时发生,则重置(Reset)具有优先权.在下面示例波形的最后4个周期中,"Reset"事件比"Set"事件早一个周期,因此这里没有冲突.
 ![capture](./picture/edgecapture.png)
 
 - **Module Declaration**  
@@ -3038,7 +3292,7 @@ endmodule
 
 - Hint:  
   - 你不能在FPGA上创建双边沿触发器,但是组合上升沿与下降沿触发器.  
-  - 这个问题是一个中等难度的电路设计问题，但只需要基本的verilog语言特性.(这是一个电路设计问题，而不是编码问题.)在试图对电路进行编码之前，先用手画出电路草图可能会有所帮助。
+  - 这个问题是一个中等难度的电路设计问题,但只需要基本的verilog语言特性.(这是一个电路设计问题,而不是编码问题.)在试图对电路进行编码之前,先用手画出电路草图可能会有所帮助.
 
 - **Module Declaraction**  
 ```verilog
@@ -3300,10 +3554,29 @@ endmodule
 
 #### - 4位左右移寄存器(4-bit shift regisger)  
 
+- Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
+
 
 
 #### - 4位左右旋转器(Left/right rotator)  
 
+- - Module Declaraction 
+```verilog
+
+```
+
+- Solution
+```verilog
+
+```
 
 
 #### - 算数左右移  
@@ -3373,9 +3646,790 @@ module top_module(
 endmodule
 ```
 
+---
 
 
+#### **有限状态机**  
 
+#### - 简单FSM1  
+
+&emsp;&emsp;实现如下简单摩尔状态机:  
+
+![fsm1](./picture/fsm1.png)
+
+- Module Declaraction 
+```verilog
+module top_module(
+    input clk,
+    input areset,    // Asynchronous reset to state B
+    input in,
+    output out);
+```
+
+- Solution
+```verilog
+module top_module(
+    input clk,
+    input areset,    // Asynchronous reset to state B
+    input in,
+    output out);//  
+
+    parameter A=0, B=1; 
+    reg state, next_state;
+
+    always @(*) begin    // This is a combinational always block
+        // State transition logic
+        case (state)
+            A: next_state <= in?A:B;
+            B: next_state <= in?B:A;
+        endcase
+    end
+
+    always @(posedge clk, posedge areset) begin    // This is a sequential always block
+        // State flip-flops with asynchronous reset
+        if(areset) begin
+            state <= B;
+        end
+        else begin
+            state <= next_state;
+        end
+    end
+
+    // Output logic
+    // assign out = (state == ...);
+        assign out = (state==B);
+
+
+    // always @(*) begin
+        // case (state)
+            // A: out <= 0;
+            // B: out <= 1;
+        // endcase
+    // end
+
+endmodule
+```
+
+#### - Fsm1s  
+
+&emsp;&emsp;实现如下电路:
+
+![fsm1s](./picture/fsm1v.png)
+
+- - Module Declaraction 
+```verilog
+module top_module(clk, reset, in, out);
+    input clk;
+    input reset;    // Synchronous reset to state B
+    input in;
+    output out;
+```
+
+- Solution
+```verilog
+// Note the Verilog-1995 module declaration syntax here:
+module top_module(clk, reset, in, out);
+    input clk;
+    input reset;    // Synchronous reset to state B
+    input in;
+    output out;//  
+    reg out;
+
+    // Fill in state name declarations
+
+    reg present_state, next_state;
+    parameter A = 0, B = 1;
+    always @(posedge clk) begin
+        if (reset) begin  
+            present_state <= B;
+        end else begin
+            present_state <= next_state;
+        end
+    end
+
+    always @(*) begin
+        case (present_state)
+            A: next_state <= in ? A : B;
+            B: next_state <= in ? B : A;
+        endcase
+    end
+    assign out = (present_state == B);
+endmodule
+```
+
+#### - fsm2
+
+&emsp;&emsp;实现如下电路:
+
+![fsm2](./picture/fsm2.png)
+
+- - Module Declaraction 
+```verilog
+module top_module(
+    input clk,
+    input areset,    // Asynchronous reset to OFF
+    input j,
+    input k,
+    output out); 
+```
+
+- Solution
+```verilog
+module top_module(
+    input clk,
+    input areset,    // Asynchronous reset to OFF
+    input j,
+    input k,
+    output out); //  
+
+    parameter OFF=0, ON=1; 
+    reg state, next_state;
+
+    always @(*) begin
+        // State transition logic
+        case (state)
+            OFF: next_state <= j ? ON : OFF;
+            ON: next_state <= k ? OFF : ON;
+        endcase
+    end
+
+    always @(posedge clk, posedge areset) begin
+        // State flip-flops with asynchronous reset
+        if(areset) begin
+            state <= OFF;
+        end else begin
+            state <= next_state;
+        end
+    end
+
+    assign out = (state == ON);
+endmodule
+```
+
+#### -fsm2s  
+
+&emsp;&emsp;实现如下状态机:  
+
+![fsm2s](./picture/fsm2s.png)
+
+
+- Module Declaraction 
+```verilog
+module top_module(
+    input clk,
+    input reset,    // Synchronous reset to OFF
+    input j,
+    input k,
+    output out); 
+```
+
+- Solution
+```verilog
+module top_module(
+    input clk,
+    input reset,    // Synchronous reset to OFF
+    input j,
+    input k,
+    output out); //  
+
+    parameter OFF=0, ON=1; 
+    reg state, next_state;
+
+    always @(*) begin
+        // State transition logic
+        case (state) 
+            OFF: next_state <= j ? ON : OFF;
+            ON: next_state <= k ? OFF : ON;
+        endcase
+    end
+
+    always @(posedge clk) begin
+        // State flip-flops with synchronous reset
+        if(reset) begin
+            state <= OFF;
+        end else begin
+            state <= next_state;
+        end
+    end
+    assign out = (state == ON);
+endmodule
+```
+
+#### - fsm3comb
+
+&emsp;&emsp;实现如下状态机:
+
+![fsm3comb](./picture/fsm2comb.png)
+
+- Module Declaraction 
+```verilog
+module top_module(
+    input in,
+    input [1:0] state,
+    output [1:0] next_state,
+    output out); 
+```
+
+- Solution
+```verilog
+module top_module(
+    input in,
+    input [1:0] state,
+    output [1:0] next_state,
+    output out); //
+
+    parameter A=0, B=1, C=2, D=3;
+
+    // State transition logic: next_state = f(state, in)
+    always @(*) begin
+        case (state)
+            A: next_state <= in ? B : A;
+            B: next_state <= in ? B : C;
+            C: next_state <= in ? D : A;
+            D: next_state <= in ? B : C;
+        endcase
+    end
+
+    assign out = (state == D);
+
+    // Output logic:  out = f(state) for a Moore state machine
+endmodule
+```
+
+#### - fsm3onehot  
+
+&emsp;&emsp;使用"独热码"(one-hot code)实现如下状态机:
+
+![onehot](./picture/onehot.png)
+
+
+- Module Declaraction 
+```verilog
+module top_module(
+    input in,
+    input [3:0] state,
+    output [3:0] next_state,
+    output out); 
+```
+
+- Solution
+```verilog
+module top_module(
+    input in,
+    input [3:0] state,
+    output [3:0] next_state,
+    output out); //
+
+    parameter A=0, B=1, C=2, D=3;
+
+    // State transition logic: Derive an equation for each state flip-flop.
+    assign next_state[A] = state[0]&(~in)|state[2]&(~in);
+    assign next_state[B] = state[0]&in|state[1]&in|state[3]&in;
+    assign next_state[C] = state[1]&(~in)|state[3]&(~in);
+    assign next_state[D] = state[2]&(in);
+
+    // Output logic: 
+    assign out = (state[3] == 1);
+
+endmodule
+```
+
+#### - fsm3
+
+&emsp;&emsp;实现如下状态机:
+
+![fsm3](./picture/fsm3.png)
+
+- Module Declaraction 
+```verilog
+module top_module(
+    input clk,
+    input in,
+    input areset,
+    output out); 
+```
+
+- Solution
+```verilog
+module top_module(
+    input clk,
+    input in,
+    input areset,
+    output out); //
+    
+    reg [2:0] state, next_state;
+    parameter A=1, B=2, C=3, D=4; 
+    // State transition logic
+    always @(*) begin
+        case (state)
+            A: next_state <= in ? B : A;
+            B: next_state <= in ? B : C;
+            C: next_state <= in ? D : A;
+            D: next_state <= in ? B : C;
+        endcase
+    end
+
+    // State flip-flops with asynchronous reset
+    always @(posedge clk or posedge areset) begin
+        if(areset) begin
+            state <= A;
+        end else begin
+            state <= next_state;
+        end
+    end
+
+    // Output logic
+    assign out = (state == D);
+endmodule
+```
+
+#### - fsm3s  
+
+&emsp;&emsp;实现如下状态机:
+
+![fsm3s](./picture/fsm3s.png)
+
+- Module Declaraction 
+```verilog
+module top_module(
+    input clk,
+    input in,
+    input reset,
+    output out); 
+```
+
+- Solution
+```verilog
+module top_module(
+    input clk,
+    input in,
+    input reset,
+    output out); //
+    
+    reg [2:0] state, next_state;
+    parameter A=0, B=1, C=2, D=3;
+    // State transition logic
+    always @(*) begin
+        case (state)
+            A: next_state <= in ? B : A;
+            B: next_state <= in ? B : C;
+            C: next_state <= in ? D : A;
+            D: next_state <= in ? B : C;
+        endcase
+    end
+
+    // State flip-flops with synchronous reset
+    always @(posedge clk) begin
+        if(reset) begin
+            state <= A;
+        end else begin
+            state <= next_state;
+        end
+    end
+
+    // Output logic
+    assign out = (state == D);
+endmodule
+```
+
+#### - Fsm serial  
+
+&emsp;&emsp;在许多(旧的)串行通信协议中,每个数据字节与一个起始位和一个终止位一起发送,以帮助接收器从位流中分隔字节.一种常见的方案是使用一个起始位(0)、8个数据位和1个终止位(1).当没有任何东西被传输(空闲)时,输出1.
+&emsp;&emsp;设计一个有限状态机,当给定比特流时,它将识别何时正确接收字节.它需要识别起始位,等待所有8个数据位,然后验证终止位是否正确.如果停止位没有在预期的时间出现,那么FSM必须等到收到终止位后才能尝试接收下一个字节.
+
+![fsm_serial](./picture/fsm_serial.png)
+
+- Module Declaraction 
+```verilog
+module top_module(
+    input clk,
+    input in,
+    input reset,    // Synchronous reset
+    output done
+);
+```
+
+- Solution
+```verilog
+module top_module(
+    input clk,
+    input in,
+    input reset,    // Synchronous reset
+    output done
+); 
+    reg [3:0] i;
+    parameter RECV=0, DONE=1, READY=3, ERROR=4;
+    reg [2:0] state, next_state;
+
+    always @(*) begin
+        case (state)
+            READY: next_state <= in ? READY : RECV;
+            RECV: begin
+                if((i==8)&in) begin
+                    next_state <= DONE;
+                end else if((i==8)&(~in)) begin
+                    next_state <= ERROR;
+                end else begin
+                    next_state <= RECV;
+                end
+            end
+            DONE: next_state <= in ? READY : RECV;
+            ERROR: next_state <= in ? READY : ERROR;
+        endcase
+    end
+
+    always @(posedge clk) begin
+        if(reset) begin
+            state <= READY;
+            i <= 0;
+        end else begin
+            if((state == RECV)&&(i!=8)) begin
+                i <= i + 1;
+            end else if(state == ERROR) begin
+                i <= 0;
+            end else if(state == DONE) begin
+                i <= 0;
+            end
+            state <= next_state;
+        end
+    end
+    assign done = (state == DONE);    
+endmodule
+```
+
+#### - Fsm serialdata  
+
+&emsp;&emsp;在上题的基础上将收到的数据输出出来:  
+
+![serialdata](./picture/fsm_serialdata.png)
+
+- Module Declaraction 
+```verilog
+module top_module(
+    input clk,
+    input in,
+    input reset,    // Synchronous reset
+    output [7:0] out_byte,
+    output done
+); 
+```
+
+- Solution
+```verilog
+module top_module(
+    input clk,
+    input in,
+    input reset,    // Synchronous reset
+    output [7:0] out_byte,
+    output done
+); 
+    reg [3:0] i;
+    parameter RECV=0, DONE=1, READY=3, ERROR=4;
+    reg [2:0] state, next_state;
+    reg [7:0] data;
+
+    always @(*) begin
+        case (state)
+            READY: next_state <= in ? READY : RECV;
+            RECV: begin
+                if((i==8)&in) begin
+                    next_state <= DONE;
+                end else if((i==8)&(~in)) begin
+                    next_state <= ERROR;
+                end else begin
+                    next_state <= RECV;
+                    data[i] <= in;
+                end
+            end
+            DONE: begin
+                next_state <= in ? READY : RECV;
+                out_byte <= data;
+            end
+            ERROR: next_state <= in ? READY : ERROR;
+        endcase
+    end
+
+    always @(posedge clk) begin
+        if(reset) begin
+            state <= READY;
+            i <= 0;
+        end else begin
+            if((state == RECV)&&(i!=8)) begin
+                i <= i + 1;
+            end else if(state == ERROR) begin
+                i <= 0;
+            end else if(state == DONE) begin
+                i <= 0;
+            end
+            state <= next_state;
+        end
+    end
+    assign done = (state == DONE);
+endmodule
+```
+
+#### - 旅鼠  
+
+&emsp;&emsp;旅鼠是一种头脑简单的动物.非常简单,我们将用一个有限状态机对它进行建模.
+
+&emsp;&emsp;在旅鼠的二维世界中,旅鼠可以处于两种状态之一：向左行走或向右行走.如果碰到障碍物,它会改变方向.尤其是,如果一只旅鼠在左边撞了,它就会向右走.如果它撞到右边,它就会向左走.如果它在两侧同时发生碰撞,它仍然会改变方向.
+&emsp;&emsp;实现一个具有两个状态、两个输入和一个输出的摩尔状态机来模拟这种行为.
+
+![lemmings1](./picture/lemmings1.png)
+
+
+- Module Declaraction 
+```verilog
+module top_module(
+    input clk,
+    input areset,    // Freshly brainwashed Lemmings walk left.
+    input bump_left,
+    input bump_right,
+    output walk_left,
+    output walk_right); 
+```
+
+- Solution
+```verilog
+module top_module(
+    input clk,
+    input areset,    // Freshly brainwashed Lemmings walk left.
+    input bump_left,
+    input bump_right,
+    output walk_left,
+    output walk_right); //  
+
+    parameter LEFT=0, RIGHT=1;
+    reg state, next_state;
+
+    always @(*) begin
+        // State transition logic
+        case (state)
+            LEFT: next_state <= bump_left ? RIGHT : LEFT;
+            RIGHT: next_state <= bump_right ? LEFT : RIGHT;
+        endcase
+    end
+
+    always @(posedge clk, posedge areset) begin
+        // State flip-flops with asynchronous reset
+        if(areset) begin
+            state <= LEFT;
+        end else begin
+            state <= next_state;
+        end
+    end
+
+    // Output logic
+    assign walk_left = (state == LEFT);
+    assign walk_right = (state == RIGHT);
+
+endmodule
+```
+
+#### - 旅鼠2
+
+&emsp;&emsp;除了向左和向右走,如果地面消失了旅鼠会下落并大喊aaah!.
+
+&emsp;&emsp;当ground=0时,除了左右行走和改变方向外,旅鼠还会跌倒并说“aaah！”.当地面重新出现(ground=1)时,旅鼠将恢复以与坠落前相同的方向行走.下落时被撞击不影响行走方向,与地面消失同一周期被撞击(但尚未坠落),或下落时地面再次出现,也不影响行走方向.
+
+&emsp;&emsp;建立一个模拟这种行为的有限状态机.
+
+![lemming2](./picture/lemming2.png)
+
+- Module Declaraction
+```verilog
+module top_module(
+    input clk,
+    input areset,    // Freshly brainwashed Lemmings walk left.
+    input bump_left,
+    input bump_right,
+    input ground,
+    output walk_left,
+    output walk_right,
+    output aaah ); 
+```
+
+- Solution
+```verilog
+module top_module(
+        input clk,
+        input areset,
+        input bump_left,
+        input bump_right,
+        input ground,
+        output walk_left,
+        output walk_right,
+        output aaah
+);
+
+        parameter LEFT = 2'd0, LEFT_GROUND = 2'd1, RIGHT = 2'd2, RIGHT_GROUND = 2'd3;
+
+        reg [1:0] curr_dir, next_dir;
+
+        always @(posedge clk or posedge areset) begin
+                // Freshly brainwashed Lemmings walk left.
+                if (areset) begin
+                        curr_dir <= LEFT;
+                end
+                else begin
+                        curr_dir <= next_dir;
+                end
+        end
+
+        always @(*) begin
+                case (curr_dir)
+                        LEFT: begin
+                                if (ground) begin
+                                        next_dir = bump_left ? RIGHT : LEFT;
+                                end
+                                else begin
+                                        next_dir = LEFT_GROUND;
+                                end
+                        end
+                        RIGHT: begin
+                                if (ground) begin
+                                        next_dir = bump_right ? LEFT : RIGHT;
+                                end
+                                else begin
+                                        next_dir = RIGHT_GROUND;
+                                end
+                        end
+                        LEFT_GROUND: begin
+                                if (ground) begin
+                                        next_dir = LEFT;
+                                end
+                                else begin
+                                        next_dir = LEFT_GROUND;
+                                end
+                        end
+                        RIGHT_GROUND: begin
+                                if (ground) begin
+                                        next_dir = RIGHT;
+                                end
+                                else begin
+                                        next_dir = RIGHT_GROUND;
+                                end
+                        end
+                endcase
+        end
+
+        assign walk_left = curr_dir == LEFT;
+        assign walk_right = curr_dir == RIGHT;
+        assign aaah = (curr_dir == LEFT_GROUND) || (curr_dir == RIGHT_GROUND);
+
+endmodule
+```
+
+#### - 旅鼠3
+
+&emsp;&emsp;除了行走和摔倒之外,有时还可以告诉旅鼠做一些有用的事情,比如挖洞(dig=1时开始挖洞).如果一只旅鼠正在地面上行走(ground=1),它可以继续挖掘直到到达另一边(ground=0).在那一点上,由于没有地面,它会掉下来(aaah!),然后在它再次落地后继续沿着它原来的方向行走.和坠落一样,在挖掘时被撞击没有效果,在坠落或没有地面时被告知挖掘是被忽略的.
+
+&emsp;&emsp;换言之,一个行尸走肉的旅鼠可能会摔倒、dig或改变方向.如果满足这些条件中的一个以上,则fall的优先级高于dig,dig的优先级高于切换方向.
+
+&emsp;&emsp;扩展有限状态机来模拟这种行为.
+
+![lemming3](./picture/lemming3.png)
+
+- Module Declaration
+```verilog
+module top_module(
+    input clk,
+    input areset,    // Freshly brainwashed Lemmings walk left.
+    input bump_left,
+    input bump_right,
+    input ground,
+    input dig,
+    output walk_left,
+    output walk_right,
+    output aaah,
+    output digging ); 
+```
+
+- Solution
+```verilog
+module top_module(
+    input clk,
+    input areset,    // Freshly brainwashed Lemmings walk left.
+    input bump_left,
+    input bump_right,
+    input ground,
+    input dig,
+    output walk_left,
+    output walk_right,
+    output aaah,
+    output digging );
+
+    reg [2:0] state, next_state;
+    parameter LEFT=0, RIGHT=1, LEFT_GROUND=3, RIGHT_GROUND=4, DIG_LEFT=5, DIG_RIGHT=6;
+    always @(*) begin
+        case (state)
+            LEFT: begin
+                if(ground) begin
+                    if(dig) begin
+                        next_state <= DIG_LEFT;
+                    end else begin
+                        next_state <= bump_left ? RIGHT : LEFT;
+                    end
+                end else begin
+                    next_state <= LEFT_GROUND;
+                end
+            end
+            RIGHT: begin
+                if(ground) begin
+                    if(dig) begin
+                        next_state <= DIG_RIGHT; 
+                    end else begin
+                        next_state <= bump_right ? LEFT : RIGHT;
+                    end
+                end else begin
+                    next_state <= RIGHT_GROUND;
+                end
+            end
+            LEFT_GROUND: begin
+                if(ground) begin
+                    next_state <= LEFT;
+                end else begin
+                    next_state <= LEFT_GROUND;
+                end
+            end
+            RIGHT_GROUND: begin
+                if(ground) begin
+                    next_state <= RIGHT;
+                end else begin
+                    next_state <= RIGHT_GROUND;
+                end
+            end
+            DIG_LEFT: begin
+                if(ground) begin
+                    next_state <= DIG_LEFT;
+                end else begin
+                    next_state <= LEFT_GROUND;
+                end
+            end
+            DIG_RIGHT: begin
+                if(ground) begin
+                    next_state <= DIG_RIGHT;
+                end else begin
+                    next_state <= RIGHT_GROUND;
+                end
+            end
+        endcase
+    end
+
+            always @(posedge clk or posedge areset) begin
+                if( areset) begin
+                    state <= LEFT;
+                end else begin
+                    state <= next_state;
+                end
+            end
+            
+            assign walk_left = (state == LEFT);
+            assign walk_right = (state == RIGHT);
+            assign aaah = (state == RIGHT_GROUND)||(state == LEFT_GROUND);
+            assign digging = (state == DIG_LEFT)||(state == DIG_RIGHT);
+endmodule
+```
 
 
 
