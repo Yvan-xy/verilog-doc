@@ -5,57 +5,45 @@ module top_module(
     output disc,
     output flag,
     output err);
-    
-    parameter RECV=0, DISC=1, FLAG=3, ERROR=4;
-    reg [2:0]state, next_state;
-    reg [3:0] i;
 
-    always @(*) begin
-        case (state)
-            RECV: begin
-                if(i < 6) begin
-                    if((i==5)&&(~in)) begin
-                        next_state <= DISC;
-                    end else begin
-                        if(~in) begin
-                            next_state <= RECV;
-                        end
-                    end
-                end else if(i==6) begin
-                    if(in) begin
-                        next_state <= ERROR;
-                    end else begin
-                        next_state <= FLAG;
-                    end
-                end
-            end
-            DISC: next_state <= RECV;
-            FLAG: next_state <= RECV;
-            ERROR: next_state <= in ? ERROR : RECV;
+    parameter none=4'd0, one=4'd1, two=4'd2, three=4'd3, four=4'd4, five=4'd5, six=4'd6, error=4'd7, discard=4'd8, flagg=4'd9;
+    reg	[3:0]	state, next_state;
+    
+    always@(*) begin
+        case({state, in})
+            {none, 1'b0}:	next_state = none;
+            {none, 1'b1}:	next_state = one;
+            {one, 1'b0}:	next_state = none;
+            {one, 1'b1}:	next_state = two;
+            {two, 1'b0}:	next_state = none;
+            {two, 1'b1}:	next_state = three;
+            {three, 1'b0}:	next_state = none;
+            {three, 1'b1}:	next_state = four;
+            {four, 1'b0}:	next_state = none;
+            {four, 1'b1}:	next_state = five;
+            {five, 1'b0}:	next_state = discard;
+            {five, 1'b1}:	next_state = six;
+            {six, 1'b0}:	next_state = flagg;
+            {six, 1'b1}:	next_state = error;
+            {error, 1'b0}:	next_state = none;
+            {error, 1'b1}:	next_state = error;
+            {discard, 1'b0}:next_state = none;
+            {discard, 1'b1}:next_state = one;
+            {flagg, 1'b0}:	next_state = none;
+            {flagg, 1'b1}:	next_state = one;
         endcase
     end
-
-    always @(posedge clk) begin
-        if(reset) begin
-            state <= RECV;
-            i <= 0;
-        end else begin
-            if(state == ERROR) begin
-                i <= 0;
-            end else if(state == DISC)begin
-                i <= 0;
-            end else if(state == FLAG)begin
-                i <= 0;
-            end else if(state == RECV)begin
-                i <= in ? (i + 1) : 0;
-            end
+    
+    always@(posedge clk) begin
+        if(reset)
+            state <= none;
+        else
             state <= next_state;
-        end
     end
-
-    assign disc = (state == DISC);
-    assign flag = (state == FLAG);
-    assign err = (state == ERROR);
-
+    
+    assign	disc = (state == discard);
+    assign	flag = (state == flagg);
+    assign	err = (state == error);
+    
 endmodule
 
