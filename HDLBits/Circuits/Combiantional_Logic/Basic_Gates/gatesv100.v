@@ -11,4 +11,3 @@ module top_module (
 	assign out_different = in ^ {in[0], in[99:1]};
 	
 endmodule
-
